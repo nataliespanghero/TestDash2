@@ -97,12 +97,12 @@ Choropleth(
     highlight=True
 ).add_to(m)
 
-# Adicionar borda preta aos hexágonos
+# Adicionar borda cinza clara aos hexágonos
 folium.GeoJson(
     hexagonos_filtrados,
     style_function=lambda x: {
-        'color': 'black',
-        'weight': 0.5,
+        'color': 'lightgray',
+        'weight': 0.3,
         'fillOpacity': 0
     },
     tooltip=GeoJsonTooltip(fields=['risk_mean_rounded'], aliases=['Risco:'], localize=True)
@@ -114,7 +114,7 @@ if show_areas_urbanas == "Mostrar":
     folium.GeoJson(
         areas_urbanas_filtradas, 
         name="Áreas Urbanas", 
-        style_function=lambda x: {'color': 'black', 'weight': 1, 'fillOpacity': 0.5},
+        style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
         tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True)
     ).add_to(m)
 
@@ -136,22 +136,22 @@ risco_percentual = (
 risco_percentual.columns = ["Categoria de Risco", "%"]
 risco_percentual["%"] *= 100
 
-# Criar gráfico de barras
+# Criar gráfico de barras com as cores correspondentes
 fig = px.bar(
     risco_percentual, 
     x="Categoria de Risco", 
     y="%", 
     title="Distribuição de Risco", 
     color="Categoria de Risco",
-    color_discrete_map={
-        0: "#00FF00",  # Verde
-        1: "#80FF00",
-        2: "#FFFF00",
-        3: "#FFBF00",
-        4: "#FF8000",
-        5: "#FF4000",
-        6: "#FF0000"   # Vermelho
-    },
+    color_discrete_sequence=[
+        "#00FF00",  # Verde (0)
+        "#80FF00",  # Verde-claro (1)
+        "#FFFF00",  # Amarelo (2)
+        "#FFBF00",  # Laranja-claro (3)
+        "#FF8000",  # Laranja (4)
+        "#FF4000",  # Laranja-escuro (5)
+        "#FF0000"   # Vermelho (6)
+    ],
     category_orders={"Categoria de Risco": list(range(7))}  # Garantir ordenação categórica
 )
 fig.update_layout(
@@ -161,5 +161,6 @@ fig.update_layout(
 
 # Exibir gráfico no Streamlit
 st.sidebar.plotly_chart(fig)
+
 
 
