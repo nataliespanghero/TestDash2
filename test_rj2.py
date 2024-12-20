@@ -52,11 +52,11 @@ selected_risk = st.sidebar.multiselect(
 if "Selecionar todos" in selected_risk:
     selected_risk = list(range(7))
 
-# SelectBox de áreas urbanas com placeholder
+# SelectBox de áreas urbanas
 show_areas_urbanas = st.sidebar.selectbox(
     "Áreas Urbanas:", 
-    options=["Escolha uma opção", "Mostrar", "Esconder"],
-    index=0
+    options=["Mostrar", "Esconder"],
+    index=1  # "Esconder" como padrão
 )
 
 # Mostrar número de municípios selecionados
@@ -93,12 +93,18 @@ Choropleth(
     fill_color="RdYlGn_r",
     fill_opacity=0.6,
     line_opacity=0.2,
-    legend_name="Risco Médio"
+    legend_name="Risco Médio",
+    highlight=True
 ).add_to(m)
 
-# Adicionar tooltip aos hexágonos
+# Adicionar borda preta aos hexágonos
 folium.GeoJson(
     hexagonos_filtrados,
+    style_function=lambda x: {
+        'color': 'black',
+        'weight': 0.5,
+        'fillOpacity': 0
+    },
     tooltip=GeoJsonTooltip(fields=['risk_mean_rounded'], aliases=['Risco:'], localize=True)
 ).add_to(m)
 
@@ -108,7 +114,7 @@ if show_areas_urbanas == "Mostrar":
     folium.GeoJson(
         areas_urbanas_filtradas, 
         name="Áreas Urbanas", 
-        style_function=lambda x: {'color': 'gray', 'weight': 0.5, 'fillOpacity': 0.3},
+        style_function=lambda x: {'color': 'black', 'weight': 1, 'fillOpacity': 0.5},
         tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True)
     ).add_to(m)
 
@@ -145,11 +151,12 @@ fig = px.bar(
         4: "#FF8000",
         5: "#FF4000",
         6: "#FF0000"   # Vermelho
-    }
+    },
+    category_orders={"Categoria de Risco": list(range(7))}  # Garantir ordenação categórica
 )
 fig.update_layout(
     xaxis=dict(tickmode='linear', tickvals=list(range(7))),
-    legend=dict(itemsizing='constant')
+    legend=dict(title="Risco", itemsizing='constant', borderwidth=1)
 )
 
 # Exibir gráfico no Streamlit
