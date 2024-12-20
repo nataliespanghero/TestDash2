@@ -82,7 +82,7 @@ m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
 folium.GeoJson(
     municipios_filtrados,
     name="Municípios", 
-    style_function=lambda x: {'color': 'blue', 'weight': 0.5, 'fillOpacity': 0.1}
+    style_function=lambda x: {'color': 'blue', 'weight': 0.5, 'fillOpacity': 0.1},
 ).add_to(m)
 
 # Adicionar camada de hexágonos com risco médio
@@ -96,7 +96,7 @@ Choropleth(
     line_opacity=0.2,
     legend_name="Risco Médio",
     name="Hexágonos Selecionados",
-    highlight=True
+    highlight=True,
 ).add_to(m)
 
 # Adicionar borda cinza clara aos hexágonos
@@ -108,7 +108,7 @@ folium.GeoJson(
         'weight': 0.3,
         'fillOpacity': 0
     },
-    tooltip=GeoJsonTooltip(fields=['risk_mean_rounded'], aliases=['Risco:'], localize=True)
+    tooltip=GeoJsonTooltip(fields=['risk_mean_rounded'], aliases=['Risco:'], localize=True),
 ).add_to(m)
 
 # Adicionar áreas urbanas acima de todas as camadas
@@ -118,7 +118,7 @@ if show_areas_urbanas == "Mostrar":
         areas_urbanas_filtradas, 
         name="Áreas Urbanas", 
         style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
-        tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True)
+        tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True),
     ).add_to(m)
 
 LayerControl().add_to(m)
@@ -141,7 +141,7 @@ risco_percentual_filtrado["%"] *= 100
 
 # Criar gráfico de barras categorizado com quadradinhos para legenda
 fig = go.Figure()
-cores = ["#00FF00", "#80FF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]
+cores = ["#008000", "#7FFF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]  # Correspondendo às cores do mapa
 
 for i, cor in enumerate(cores):
     fig.add_trace(go.Bar(
