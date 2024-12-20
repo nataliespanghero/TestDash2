@@ -95,12 +95,14 @@ Choropleth(
     fill_opacity=0.6,
     line_opacity=0.2,
     legend_name="Risco Médio",
+    name="Hexágonos Selecionados",
     highlight=True
 ).add_to(m)
 
 # Adicionar borda cinza clara aos hexágonos
 folium.GeoJson(
     hexagonos_filtrados,
+    name="Hexágonos",
     style_function=lambda x: {
         'color': 'lightgray',
         'weight': 0.3,
@@ -160,6 +162,10 @@ fig.update_layout(
         borderwidth=1
     )
 )
+
+# Exibir gráfico no Streamlit
+st.sidebar.plotly_chart(fig)
+
 
 # Exibir gráfico no Streamlit
 st.sidebar.plotly_chart(fig)
