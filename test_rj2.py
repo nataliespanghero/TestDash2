@@ -82,7 +82,8 @@ m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
 folium.GeoJson(
     municipios_filtrados,
     name="Municípios", 
-    style_function=lambda x: {'color': 'blue', 'weight': 0.5, 'fillOpacity': 0.1}
+    style_function=lambda x: {'color': 'blue', 'weight': 0.5, 'fillOpacity': 0.1},
+    show=False
 ).add_to(m)
 
 # Adicionar camada de hexágonos com risco médio
@@ -96,7 +97,8 @@ Choropleth(
     line_opacity=0.2,
     legend_name="Risco Médio",
     name="Hexágonos Selecionados",
-    highlight=True
+    highlight=True,
+    show=False
 ).add_to(m)
 
 # Adicionar borda cinza clara aos hexágonos
@@ -108,7 +110,8 @@ folium.GeoJson(
         'weight': 0.3,
         'fillOpacity': 0
     },
-    tooltip=GeoJsonTooltip(fields=['risk_mean_rounded'], aliases=['Risco:'], localize=True)
+    tooltip=GeoJsonTooltip(fields=['risk_mean_rounded'], aliases=['Risco:'], localize=True),
+    show=False
 ).add_to(m)
 
 # Adicionar áreas urbanas acima de todas as camadas
@@ -118,7 +121,8 @@ if show_areas_urbanas == "Mostrar":
         areas_urbanas_filtradas, 
         name="Áreas Urbanas", 
         style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
-        tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True)
+        tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True),
+        show=False
     ).add_to(m)
 
 LayerControl().add_to(m)
@@ -165,6 +169,7 @@ fig.update_layout(
 
 # Exibir gráfico no Streamlit
 st.sidebar.plotly_chart(fig)
+
 
 
 # Exibir gráfico no Streamlit
