@@ -4,6 +4,7 @@ import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
 from streamlit_folium import st_folium
 import plotly.express as px
+import plotly.graph_objects as go
 
 # Carregar dados
 malha_viaria = gpd.read_file('Risco.geojson')
@@ -136,27 +137,28 @@ risco_percentual = (
 risco_percentual.columns = ["Categoria de Risco", "%"]
 risco_percentual["%"] *= 100
 
-# Criar gráfico de barras com as cores correspondentes
-fig = px.bar(
-    risco_percentual, 
-    x="Categoria de Risco", 
-    y="%", 
-    title="Distribuição de Risco", 
-    color="Categoria de Risco",
-    color_discrete_sequence=[
-        "#00FF00",  # Verde (0)
-        "#80FF00",  # Verde-claro (1)
-        "#FFFF00",  # Amarelo (2)
-        "#FFBF00",  # Laranja-claro (3)
-        "#FF8000",  # Laranja (4)
-        "#FF4000",  # Laranja-escuro (5)
-        "#FF0000"   # Vermelho (6)
-    ],
-    category_orders={"Categoria de Risco": list(range(7))}  # Garantir ordenação categórica
-)
+# Criar gráfico de barras categorizado com quadradinhos para legenda
+fig = go.Figure()
+cores = ["#00FF00", "#80FF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]
+
+for i, cor in enumerate(cores):
+    fig.add_trace(go.Bar(
+        x=[risco_percentual.loc[i, 'Categoria de Risco']],
+        y=[risco_percentual.loc[i, '%']],
+        name=f"Risco {i}",
+        marker_color=cor
+    ))
+
 fig.update_layout(
-    xaxis=dict(tickmode='linear', tickvals=list(range(7))),
-    legend=dict(title="Risco", itemsizing='constant', borderwidth=1)
+    title="Distribuição de Risco",
+    xaxis_title="Categoria de Risco",
+    yaxis_title="%",
+    barmode="group",
+    legend=dict(
+        title="Risco",
+        itemsizing="constant",
+        borderwidth=1
+    )
 )
 
 # Exibir gráfico no Streamlit
