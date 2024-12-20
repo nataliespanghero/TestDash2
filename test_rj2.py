@@ -34,21 +34,29 @@ st.title("Dashboard Interativo: Risco de Atropelamento no Estado do Rio de Janei
 # Layout da página
 st.sidebar.header("Configurações")
 
-# SelectBox de municípios
+# SelectBox de municípios com "Selecionar todos"
 selected_municipios = st.sidebar.multiselect(
     "Selecione os municípios:", 
-    municipios['NM_MUN'].unique(), 
+    options=["Selecionar todos"] + municipios['NM_MUN'].unique().tolist(), 
     default=[]
 )
+if "Selecionar todos" in selected_municipios:
+    selected_municipios = municipios['NM_MUN'].unique().tolist()
 
-# Botão para mostrar/ocultar áreas urbanas
-show_areas_urbanas = st.sidebar.selectbox("Áreas Urbanas:", ["Mostrar", "Esconder"])
-
-# SelectBox de risco
+# SelectBox de risco com "Selecionar todos"
 selected_risk = st.sidebar.multiselect(
     "Selecione o risco:", 
-    list(range(7)), 
+    options=["Selecionar todos"] + list(range(7)), 
     default=[]
+)
+if "Selecionar todos" in selected_risk:
+    selected_risk = list(range(7))
+
+# SelectBox de áreas urbanas com placeholder
+show_areas_urbanas = st.sidebar.selectbox(
+    "Áreas Urbanas:", 
+    options=["Escolha uma opção", "Mostrar", "Esconder"],
+    index=0
 )
 
 # Mostrar número de municípios selecionados
@@ -58,10 +66,10 @@ if selected_municipios:
 # Filtrar municípios e hexágonos
 if selected_municipios:
     municipios_filtrados = municipios[municipios['NM_MUN'].isin(selected_municipios)]
+    hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(municipios_filtrados.unary_union)]
 else:
     municipios_filtrados = municipios
-
-hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(municipios_filtrados.unary_union)]
+    hexagonos_filtrados = hexagonos_h3
 
 if selected_risk:
     hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados['risk_mean_rounded'].isin(selected_risk)]
@@ -69,10 +77,17 @@ if selected_risk:
 # Criar mapa
 m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
 
-# Adicionar camada de hexágonos com risco médio (manter cores fixas)
+# Adicionar municípios abaixo de todas as camadas
+folium.GeoJson(
+    municipios,
+    name="Municípios", 
+    style_function=lambda x: {'color': 'blue', 'weight': 0.5, 'fillOpacity': 0.1}
+).add_to(m)
+
+# Adicionar camada de hexágonos com risco médio
 Choropleth(
-    geo_data=hexagonos_h3,  # Hexágonos completos para manter cores fixas
-    data=hexagonos_h3,
+    geo_data=hexagonos_filtrados,
+    data=hexagonos_h3,  # Usar dados completos para manter escala de cores fixa
     columns=["index", "risk_mean_rounded"],
     key_on="feature.properties.index",
     fill_color="RdYlGn_r",
@@ -87,7 +102,7 @@ folium.GeoJson(
     tooltip=GeoJsonTooltip(fields=['risk_mean_rounded'], aliases=['Risco:'], localize=True)
 ).add_to(m)
 
-# Adicionar áreas urbanas acima de tudo
+# Adicionar áreas urbanas acima de todas as camadas
 if show_areas_urbanas == "Mostrar":
     areas_urbanas_filtradas = areas_urbanas[areas_urbanas.intersects(municipios_filtrados.unary_union)]
     folium.GeoJson(
@@ -97,13 +112,6 @@ if show_areas_urbanas == "Mostrar":
         tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True)
     ).add_to(m)
 
-# Adicionar municípios abaixo de tudo
-folium.GeoJson(
-    municipios,
-    name="Municípios", 
-    style_function=lambda x: {'color': 'blue', 'weight': 1, 'fillOpacity': 0.1}
-).add_to(m)
-
 LayerControl().add_to(m)
 
 # Exibir mapa
@@ -112,7 +120,7 @@ st_folium(m, width=800, height=500)
 # Seção de gráfico
 st.sidebar.header("Distribuição de Risco por Categoria")
 
-# Calcular % de risco por categoria
+# Calcular % de risco por categoria (usar dados completos para garantir todas as categorias)
 risco_percentual = (
     hexagonos_h3['risk_mean_rounded']
     .value_counts(normalize=True)
@@ -146,4 +154,5 @@ fig.update_layout(
 
 # Exibir gráfico no Streamlit
 st.sidebar.plotly_chart(fig)
+
 
