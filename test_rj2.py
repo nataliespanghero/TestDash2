@@ -78,9 +78,9 @@ if selected_risk:
 # Criar mapa
 m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
 
-# Adicionar municípios abaixo de todas as camadas
+# Adicionar municípios abaixo de todas as camadas apenas os selecionados
 folium.GeoJson(
-    municipios,
+    municipios_filtrados,
     name="Municípios", 
     style_function=lambda x: {'color': 'blue', 'weight': 0.5, 'fillOpacity': 0.1}
 ).add_to(m)
@@ -127,15 +127,15 @@ st_folium(m, width=800, height=500)
 # Seção de gráfico
 st.sidebar.header("Distribuição de Risco por Categoria")
 
-# Calcular % de risco por categoria (usar dados completos para garantir todas as categorias)
-risco_percentual = (
-    hexagonos_h3['risk_mean_rounded']
+# Calcular % de risco por categoria para hexágonos filtrados
+risco_percentual_filtrado = (
+    hexagonos_filtrados['risk_mean_rounded']
     .value_counts(normalize=True)
     .reindex(range(7), fill_value=0)
     .reset_index()
 )
-risco_percentual.columns = ["Categoria de Risco", "%"]
-risco_percentual["%"] *= 100
+risco_percentual_filtrado.columns = ["Categoria de Risco", "%"]
+risco_percentual_filtrado["%"] *= 100
 
 # Criar gráfico de barras categorizado com quadradinhos para legenda
 fig = go.Figure()
@@ -143,8 +143,8 @@ cores = ["#00FF00", "#80FF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0
 
 for i, cor in enumerate(cores):
     fig.add_trace(go.Bar(
-        x=[risco_percentual.loc[i, 'Categoria de Risco']],
-        y=[risco_percentual.loc[i, '%']],
+        x=[risco_percentual_filtrado.loc[i, 'Categoria de Risco']],
+        y=[risco_percentual_filtrado.loc[i, '%']],
         name=f"Risco {i}",
         marker_color=cor
     ))
