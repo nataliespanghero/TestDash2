@@ -3,7 +3,7 @@ import geopandas as gpd
 import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
 from streamlit_folium import st_folium
-import plotly.express as px
+from streamlit_tags import st_tags
 import plotly.graph_objects as go
 
 # Carregar dados
@@ -35,32 +35,26 @@ st.title("Dashboard Interativo: Risco de Atropelamento no Estado do Rio de Janei
 # Layout da página
 st.sidebar.header("Configurações")
 
-# Lista de municípios e checkbox para selecionar todos
-selected_municipios = []
+# Selectbox de municípios com checkboxes
 municipios_list = municipios['NM_MUN'].unique().tolist()
-select_all_municipios = st.sidebar.checkbox("Selecionar todos os municípios")
-
-if select_all_municipios:
-    selected_municipios = municipios_list
-else:
-    for municipio in municipios_list:
-        if st.sidebar.checkbox(municipio):
-            selected_municipios.append(municipio)
+selected_municipios = st_tags(
+    label="Selecione os Municípios",
+    text="Selecione...",
+    suggestions=municipios_list,
+    maxtags=len(municipios_list)
+)
 
 # Mostrar número de municípios selecionados
 st.sidebar.write(f"{len(selected_municipios)} Município(s) selecionado(s)")
 
-# Lista de categorias de risco e checkbox para selecionar todos
-selected_risk = []
-risk_list = list(range(7))
-select_all_risk = st.sidebar.checkbox("Selecionar todos os riscos")
-
-if select_all_risk:
-    selected_risk = risk_list
-else:
-    for risk in risk_list:
-        if st.sidebar.checkbox(f"Risco {risk}"):
-            selected_risk.append(risk)
+# Selectbox de riscos com checkboxes
+risks_list = list(range(7))
+selected_risk = st_tags(
+    label="Selecione os Riscos",
+    text="Selecione...",
+    suggestions=[f"Risco {r}" for r in risks_list],
+    maxtags=len(risks_list)
+)
 
 # Mostrar número de riscos selecionados
 st.sidebar.write(f"{len(selected_risk)} Risco(s) selecionado(s)")
@@ -81,7 +75,8 @@ else:
     hexagonos_filtrados = hexagonos_h3
 
 if selected_risk:
-    hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados['risk_mean_rounded'].isin(selected_risk)]
+    selected_risk_values = [int(r.split()[1]) for r in selected_risk]  # Extrair os valores numéricos
+    hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados['risk_mean_rounded'].isin(selected_risk_values)]
 
 # Criar mapa
 m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
@@ -173,3 +168,4 @@ fig.update_layout(
 
 # Exibir gráfico no Streamlit
 st.sidebar.plotly_chart(fig)
+
