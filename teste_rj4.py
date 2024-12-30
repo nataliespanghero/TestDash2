@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_javascript import st_javascript
 import geopandas as gpd
 import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
@@ -30,7 +31,7 @@ hexagonos_h3 = gpd.read_file('hexagonos_h3_com_risco.geojson')
 # Configuração do Streamlit
 st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
 
-# Adicionar CSS personalizado para responsividade
+# Adicionar CSS personalizado
 st.markdown(
     """
     <style>
@@ -47,6 +48,22 @@ st.markdown(
 )
 
 st.title("Dashboard Interativo: Risco de Atropelamento no Estado do Rio de Janeiro")
+
+# Capturar dimensões da janela do navegador com JavaScript
+js_code = """
+const width = window.innerWidth;
+const height = window.innerHeight;
+return {width, height};
+"""
+dimensions = st_javascript(js_code)
+
+# Ajustar largura e altura do mapa
+if dimensions:
+    map_width = int(dimensions['width'] * 0.8)  # 80% da largura da janela
+    map_height = int(dimensions['height'] * 0.6)  # 60% da altura da janela
+else:
+    map_width = 900
+    map_height = 600
 
 # Layout da página
 st.sidebar.header("Configurações")
@@ -97,7 +114,7 @@ if selected_risk:
 # Criar mapa
 m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
 
-# Adicionar municípios abaixo de todas as camadas apenas os selecionados
+# Adicionar municípios abaixo de todas as camadas
 folium.GeoJson(
     municipios_filtrados,
     name="Municípios", 
@@ -143,7 +160,7 @@ if show_areas_urbanas == "Mostrar":
 LayerControl().add_to(m)
 
 # Exibir mapa
-st_folium(m, width=0.9 * st.get_option("browser.width"), height=0.7 * st.get_option("browser.height"))
+st_folium(m, width=map_width, height=map_height)
 
 # Seção de gráfico
 st.sidebar.header("Distribuição de Risco por Categoria")
@@ -160,7 +177,7 @@ risco_percentual_filtrado["%"] *= 100
 
 # Criar gráfico de barras categorizado com quadradinhos para legenda
 fig = go.Figure()
-cores = ["#008000", "#7FFF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]  # Correspondendo às cores do mapa
+cores = ["#008000", "#7FFF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]
 
 for i, cor in enumerate(cores):
     fig.add_trace(go.Bar(
