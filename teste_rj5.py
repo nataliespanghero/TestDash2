@@ -86,9 +86,12 @@ show_areas_urbanas = st.sidebar.selectbox(
 
 # Botão para aplicar filtros
 if st.sidebar.button("Aplicar Filtros"):
-    # Atualizar os estados dos filtros
-    st.session_state.selected_risks = selected_risks
-    st.session_state.selected_concessions = selected_concessions
+    # Atualizar os estados dos filtros apenas se necessário
+    if st.session_state.selected_risks != selected_risks:
+        st.session_state.selected_risks = list(selected_risks)
+
+    if st.session_state.selected_concessions != selected_concessions:
+        st.session_state.selected_concessions = list(selected_concessions)
 
     # Aplicar os filtros
     hexagonos_filtrados = hexagonos_h3.copy()
@@ -110,6 +113,7 @@ if st.sidebar.button("Aplicar Filtros"):
 else:
     # Nenhum filtro aplicado, mostrar dados completos
     hexagonos_filtrados = hexagonos_h3
+
 
 # Criar mapa
 if hexagonos_filtrados.empty:
