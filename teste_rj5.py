@@ -56,6 +56,9 @@ if "selected_risks" not in st.session_state:
 if "selected_concessions" not in st.session_state:
     st.session_state.selected_concessions = ["Selecionar todos"]
 
+if "apply_filters" not in st.session_state:
+    st.session_state.apply_filters = False
+
 # Layout da página
 st.sidebar.header("Configurações")
 
@@ -86,14 +89,12 @@ show_areas_urbanas = st.sidebar.selectbox(
 
 # Botão para aplicar filtros
 if st.sidebar.button("Aplicar Filtros"):
-    # Atualizar os estados dos filtros apenas se necessário
-    if st.session_state.selected_risks != selected_risks:
-        st.session_state.selected_risks = list(selected_risks)
+    st.session_state.apply_filters = True
+    st.session_state.selected_risks = list(selected_risks)
+    st.session_state.selected_concessions = list(selected_concessions)
 
-    if st.session_state.selected_concessions != selected_concessions:
-        st.session_state.selected_concessions = list(selected_concessions)
-
-    # Aplicar os filtros
+# Aplicar os filtros apenas quando o botão for pressionado
+if st.session_state.apply_filters:
     hexagonos_filtrados = hexagonos_h3.copy()
 
     # Filtro de riscos
@@ -111,9 +112,7 @@ if st.sidebar.button("Aplicar Filtros"):
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 else:
-    # Nenhum filtro aplicado, mostrar dados completos
     hexagonos_filtrados = hexagonos_h3
-
 
 # Criar mapa
 if hexagonos_filtrados.empty:
@@ -160,6 +159,7 @@ else:
 
     # Exibir mapa com dimensões ajustáveis
     st_folium(m, width=map_width, height=map_height)
+
 
 # Seção de gráfico
 st.sidebar.header("Distribuição de Risco por Categoria")
