@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_javascript import st_javascript
 import geopandas as gpd
 import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
@@ -29,6 +30,19 @@ hexagonos_h3 = gpd.read_file('hexagonos_h3_com_risco.geojson')
 st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
 
 st.title("Dashboard Interativo: Risco de Atropelamento")
+
+# Executar código JavaScript para obter largura e altura da janela do navegador
+dimensions = st_javascript(
+    """
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    return {width, height};
+    """
+)
+
+# Definir dimensões do mapa com base na tela do usuário
+map_width = dimensions['width'] * 0.95  # 95% da largura da tela
+map_height = dimensions['height'] * 0.6  # 60% da altura da tela
 
 # Layout da página
 st.sidebar.header("Configurações")
@@ -116,8 +130,8 @@ else:
 
     LayerControl().add_to(m)
 
-    # Exibir mapa
-    st_folium(m, width=700, height=500)
+    # Exibir mapa com dimensões ajustáveis
+    st_folium(m, width=map_width, height=map_height)
 
 # Seção de gráfico
 st.sidebar.header("Distribuição de Risco por Categoria")
