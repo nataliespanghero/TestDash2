@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_javascript import st_javascript
 import geopandas as gpd
 import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
@@ -7,9 +6,8 @@ from streamlit_folium import st_folium
 import plotly.graph_objects as go
 
 # Carregar dados
-malha_viaria = gpd.read_file('Risco.geojson')
+malha_viaria = gpd.read_file('Risco2.geojson')
 hexagonos_h3 = gpd.read_file('H3.geojson')
-municipios = gpd.read_file('MUN_RJ.geojson')
 areas_urbanas = gpd.read_file('AU.geojson')
 
 # Calcular risco médio por hexágono, se necessário
@@ -30,25 +28,25 @@ hexagonos_h3 = gpd.read_file('hexagonos_h3_com_risco.geojson')
 # Configuração do Streamlit
 st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
 
-st.title("Dashboard Interativo: Risco de Atropelamento no Estado do Rio de Janeiro")
+st.title("Dashboard Interativo: Risco de Atropelamento")
 
 # Layout da página
 st.sidebar.header("Configurações")
 
-# Filtro de Riscos (prioridade)
+# Filtro de Riscos
 risks_list = list(range(7))
 selected_risks = st.sidebar.multiselect(
     "Selecione os Riscos:",
-    options=[f"Risco {r}" for r in risks_list],
-    default=[]
+    options=["Selecionar todos"] + [f"Risco {r}" for r in risks_list],
+    default=["Selecionar todos"]
 )
 
-# Filtro de Municípios
-municipios_list = municipios['NM_MUN'].unique().tolist()
-selected_municipios = st.sidebar.multiselect(
-    "Selecione os Municípios:",
-    options=municipios_list,
-    default=[]
+# Filtro de Concessões
+concessions_list = malha_viaria['empresa'].unique().tolist()
+selected_concessions = st.sidebar.multiselect(
+    "Selecione a Concessão:",
+    options=["Selecionar todos"] + concessions_list,
+    default=["Selecionar todos"]
 )
 
 # Opção de Áreas Urbanas
@@ -60,20 +58,19 @@ show_areas_urbanas = st.sidebar.selectbox(
 
 # Botão para aplicar filtros
 if st.sidebar.button("Aplicar Filtros"):
-    # Aplicar filtros com base nas seleções
-    if selected_municipios:
-        municipios_filtrados = municipios[municipios['NM_MUN'].isin(selected_municipios)]
-        hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(municipios_filtrados.unary_union)]
-    else:
-        municipios_filtrados = municipios
-        hexagonos_filtrados = hexagonos_h3
+    hexagonos_filtrados = hexagonos_h3.copy()
 
-    if selected_risks:
-        selected_risk_values = [int(r.split()[1]) for r in selected_risks]  # Extrair valores numéricos
+    # Aplicar filtro de riscos
+    if "Selecionar todos" not in selected_risks:
+        selected_risk_values = [int(r.split()[1]) for r in selected_risks]
         hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados['risk_mean_rounded'].isin(selected_risk_values)]
+
+    # Aplicar filtro de concessões
+    if "Selecionar todos" not in selected_concessions:
+        segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
+        hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)]
 else:
     # Nenhum filtro aplicado, mostrar dados completos
-    municipios_filtrados = municipios
     hexagonos_filtrados = hexagonos_h3
 
 # Criar mapa
@@ -81,13 +78,6 @@ if hexagonos_filtrados.empty:
     st.error("Nenhum hexágono foi encontrado para os filtros aplicados.")
 else:
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
-
-    # Adicionar municípios
-    folium.GeoJson(
-        municipios_filtrados,
-        name="Municípios", 
-        style_function=lambda x: {'color': 'blue', 'weight': 0.5, 'fillOpacity': 0.1},
-    ).add_to(m)
 
     # Adicionar camada de hexágonos com risco médio
     Choropleth(
@@ -117,9 +107,8 @@ else:
 
     # Adicionar áreas urbanas acima de todas as camadas
     if show_areas_urbanas == "Mostrar":
-        areas_urbanas_filtradas = areas_urbanas[areas_urbanas.intersects(municipios_filtrados.unary_union)]
         folium.GeoJson(
-            areas_urbanas_filtradas, 
+            areas_urbanas, 
             name="Áreas Urbanas", 
             style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
             tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True),
@@ -128,7 +117,7 @@ else:
     LayerControl().add_to(m)
 
     # Exibir mapa
-    st_folium(m, width=map_width, height=map_height)
+    st_folium(m, width=700, height=500)
 
 # Seção de gráfico
 st.sidebar.header("Distribuição de Risco por Categoria")
