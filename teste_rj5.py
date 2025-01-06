@@ -40,9 +40,15 @@ dimensions = st_javascript(
     """
 )
 
-# Definir dimensões do mapa com base na tela do usuário
-map_width = dimensions['width'] * 0.95  # 95% da largura da tela
-map_height = dimensions['height'] * 0.6  # 60% da altura da tela
+# Verificar se dimensions é válido
+if dimensions and 'width' in dimensions and 'height' in dimensions:
+    map_width = dimensions['width'] * 0.95  # 95% da largura da tela
+    map_height = dimensions['height'] * 0.6  # 60% da altura da tela
+else:
+    st.warning("Não foi possível obter o tamanho da tela. Usando valores padrão.")
+    map_width = 800  # Largura padrão
+    map_height = 600  # Altura padrão
+
 
 # Layout da página
 st.sidebar.header("Configurações")
