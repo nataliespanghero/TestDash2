@@ -79,16 +79,21 @@ show_areas_urbanas = st.sidebar.selectbox(
 # Botão para aplicar filtros
 if st.sidebar.button("Aplicar Filtros"):
     hexagonos_filtrados = hexagonos_h3.copy()
-
-    # Aplicar filtro de riscos
+    
+    # Filtro de riscos
     if "Selecionar todos" not in selected_risks:
         selected_risk_values = [int(r.split()[1]) for r in selected_risks]
-        hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados['risk_mean_rounded'].isin(selected_risk_values)]
-
-    # Aplicar filtro de concessões
+        hexagonos_filtrados = hexagonos_filtrados[
+            hexagonos_filtrados['risk_mean_rounded'].isin(selected_risk_values)
+        ]
+    
+    # Filtro de concessões
     if "Selecionar todos" not in selected_concessions:
         segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
-        hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)]
+        if not segmentos_filtrados.empty:
+            hexagonos_filtrados = hexagonos_filtrados[
+                hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
+            ]
 else:
     # Nenhum filtro aplicado, mostrar dados completos
     hexagonos_filtrados = hexagonos_h3
