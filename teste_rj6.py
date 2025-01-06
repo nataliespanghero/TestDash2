@@ -52,12 +52,26 @@ else:
 # Layout da página
 st.sidebar.header("Configurações")
 
+# Inicializar o estado do botão e dos filtros
+if "apply_filters" not in st.session_state:
+    st.session_state.apply_filters = False
+
+if "selected_risks" not in st.session_state:
+    st.session_state.selected_risks = ["Selecionar todos"]
+
+if "selected_concessions" not in st.session_state:
+    st.session_state.selected_concessions = ["Selecionar todos"]
+
+# Layout da página
+st.sidebar.header("Configurações")
+
 # Filtro de Riscos
 risks_list = list(range(7))
 selected_risks = st.sidebar.multiselect(
     "Selecione os Riscos:",
     options=["Selecionar todos"] + [f"Risco {r}" for r in risks_list],
-    default=["Selecionar todos"]
+    default=st.session_state.selected_risks,
+    key="selected_risks"
 )
 
 # Filtro de Concessões
@@ -65,7 +79,8 @@ concessions_list = malha_viaria['empresa'].unique().tolist()
 selected_concessions = st.sidebar.multiselect(
     "Selecione a Concessão:",
     options=["Selecionar todos"] + concessions_list,
-    default=["Selecionar todos"]
+    default=st.session_state.selected_concessions,
+    key="selected_concessions"
 )
 
 # Opção de Áreas Urbanas
@@ -77,24 +92,27 @@ show_areas_urbanas = st.sidebar.selectbox(
 
 # Botão para aplicar filtros
 if st.sidebar.button("Aplicar Filtros"):
+    st.session_state.apply_filters = True
+
+# Aplicar filtros apenas quando o botão for clicado
+if st.session_state.apply_filters:
     hexagonos_filtrados = hexagonos_h3.copy()
 
     # Filtro de riscos
-    if "Selecionar todos" not in selected_risks:
-        selected_risk_values = [int(r.split()[1]) for r in selected_risks]
+    if "Selecionar todos" not in st.session_state.selected_risks:
+        selected_risk_values = [int(r.split()[1]) for r in st.session_state.selected_risks]
         hexagonos_filtrados = hexagonos_filtrados[
             hexagonos_filtrados['risk_mean_rounded'].isin(selected_risk_values)
         ]
 
     # Filtro de concessões
-    if "Selecionar todos" not in selected_concessions:
-        segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
+    if "Selecionar todos" not in st.session_state.selected_concessions:
+        segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(st.session_state.selected_concessions)]
         if not segmentos_filtrados.empty:
             hexagonos_filtrados = hexagonos_filtrados[
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 else:
-    # Nenhum filtro aplicado, mostrar dados completos
     hexagonos_filtrados = hexagonos_h3
 
 # Criar mapa
@@ -142,6 +160,7 @@ else:
 
     # Exibir mapa com dimensões ajustáveis
     st_folium(m, width=map_width, height=map_height)
+
 
 # Seção de gráfico
 st.sidebar.header("Distribuição de Risco por Categoria")
