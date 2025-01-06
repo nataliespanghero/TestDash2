@@ -60,7 +60,7 @@ show_areas_urbanas = st.sidebar.selectbox(
 
 # Botão para aplicar filtros
 if st.sidebar.button("Aplicar Filtros"):
-    # Verificar seleção de filtros
+    # Aplicar filtros com base nas seleções
     if selected_municipios:
         municipios_filtrados = municipios[municipios['NM_MUN'].isin(selected_municipios)]
         hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(municipios_filtrados.unary_union)]
@@ -71,100 +71,104 @@ if st.sidebar.button("Aplicar Filtros"):
     if selected_risks:
         selected_risk_values = [int(r.split()[1]) for r in selected_risks]  # Extrair valores numéricos
         hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados['risk_mean_rounded'].isin(selected_risk_values)]
+else:
+    # Nenhum filtro aplicado, mostrar dados completos
+    municipios_filtrados = municipios
+    hexagonos_filtrados = hexagonos_h3
 
-    # Criar mapa
-    if hexagonos_filtrados.empty:
-        st.error("Nenhum hexágono foi encontrado para os filtros aplicados.")
-    else:
-        m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
+# Criar mapa
+if hexagonos_filtrados.empty:
+    st.error("Nenhum hexágono foi encontrado para os filtros aplicados.")
+else:
+    m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
 
-        # Adicionar municípios
+    # Adicionar municípios
+    folium.GeoJson(
+        municipios_filtrados,
+        name="Municípios", 
+        style_function=lambda x: {'color': 'blue', 'weight': 0.5, 'fillOpacity': 0.1},
+    ).add_to(m)
+
+    # Adicionar camada de hexágonos com risco médio
+    Choropleth(
+        geo_data=hexagonos_filtrados,
+        data=hexagonos_h3,  # Usar dados completos para manter escala de cores fixa
+        columns=["index", "risk_mean_rounded"],
+        key_on="feature.properties.index",
+        fill_color="RdYlGn_r",
+        fill_opacity=0.6,
+        line_opacity=0.2,
+        legend_name="Risco Médio",
+        name="Hexágonos Selecionados",
+        highlight=True,
+    ).add_to(m)
+
+    # Adicionar borda cinza clara aos hexágonos
+    folium.GeoJson(
+        hexagonos_filtrados,
+        name="Hexágonos",
+        style_function=lambda x: {
+            'color': 'lightgray',
+            'weight': 0.3,
+            'fillOpacity': 0
+        },
+        tooltip=GeoJsonTooltip(fields=['risk_mean_rounded'], aliases=['Risco:'], localize=True),
+    ).add_to(m)
+
+    # Adicionar áreas urbanas acima de todas as camadas
+    if show_areas_urbanas == "Mostrar":
+        areas_urbanas_filtradas = areas_urbanas[areas_urbanas.intersects(municipios_filtrados.unary_union)]
         folium.GeoJson(
-            municipios_filtrados,
-            name="Municípios", 
-            style_function=lambda x: {'color': 'blue', 'weight': 0.5, 'fillOpacity': 0.1},
+            areas_urbanas_filtradas, 
+            name="Áreas Urbanas", 
+            style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
+            tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True),
         ).add_to(m)
 
-        # Adicionar camada de hexágonos com risco médio
-        Choropleth(
-            geo_data=hexagonos_filtrados,
-            data=hexagonos_h3,  # Usar dados completos para manter escala de cores fixa
-            columns=["index", "risk_mean_rounded"],
-            key_on="feature.properties.index",
-            fill_color="RdYlGn_r",
-            fill_opacity=0.6,
-            line_opacity=0.2,
-            legend_name="Risco Médio",
-            name="Hexágonos Selecionados",
-            highlight=True,
-        ).add_to(m)
+    LayerControl().add_to(m)
 
-        # Adicionar borda cinza clara aos hexágonos
-        folium.GeoJson(
-            hexagonos_filtrados,
-            name="Hexágonos",
-            style_function=lambda x: {
-                'color': 'lightgray',
-                'weight': 0.3,
-                'fillOpacity': 0
-            },
-            tooltip=GeoJsonTooltip(fields=['risk_mean_rounded'], aliases=['Risco:'], localize=True),
-        ).add_to(m)
+    # Exibir mapa
+    st_folium(m, width=900, height=600)
 
-        # Adicionar áreas urbanas acima de todas as camadas
-        if show_areas_urbanas == "Mostrar":
-            areas_urbanas_filtradas = areas_urbanas[areas_urbanas.intersects(municipios_filtrados.unary_union)]
-            folium.GeoJson(
-                areas_urbanas_filtradas, 
-                name="Áreas Urbanas", 
-                style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
-                tooltip=GeoJsonTooltip(fields=['Densidade'], aliases=['Densidade de urbanização:'], localize=True),
-            ).add_to(m)
+# Seção de gráfico
+st.sidebar.header("Distribuição de Risco por Categoria")
 
-        LayerControl().add_to(m)
+# Calcular % de risco por categoria para hexágonos filtrados
+risco_percentual_filtrado = (
+    hexagonos_filtrados['risk_mean_rounded']
+    .value_counts(normalize=True)
+    .reindex(range(7), fill_value=0)
+    .reset_index()
+)
+risco_percentual_filtrado.columns = ["Categoria de Risco", "%"]
+risco_percentual_filtrado["%"] *= 100
 
-        # Exibir mapa
-        st_folium(m, width=900, height=600)
+# Criar gráfico de barras categorizado com quadradinhos para legenda
+fig = go.Figure()
+cores = ["#008000", "#7FFF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]
 
-    # Seção de gráfico
-    st.sidebar.header("Distribuição de Risco por Categoria")
+for i, cor in enumerate(cores):
+    fig.add_trace(go.Bar(
+        x=[risco_percentual_filtrado.loc[i, 'Categoria de Risco']],
+        y=[risco_percentual_filtrado.loc[i, '%']],
+        name=f"Risco {i}",
+        marker_color=cor
+    ))
 
-    # Calcular % de risco por categoria para hexágonos filtrados
-    risco_percentual_filtrado = (
-        hexagonos_filtrados['risk_mean_rounded']
-        .value_counts(normalize=True)
-        .reindex(range(7), fill_value=0)
-        .reset_index()
+fig.update_layout(
+    title="Distribuição de Risco",
+    xaxis_title="Categoria de Risco",
+    yaxis_title="% em Hexágonos",
+    autosize=True,
+    barmode="group",
+    legend=dict(
+        title="Risco",
+        itemsizing="constant",
+        borderwidth=1
     )
-    risco_percentual_filtrado.columns = ["Categoria de Risco", "%"]
-    risco_percentual_filtrado["%"] *= 100
+)
 
-    # Criar gráfico de barras categorizado com quadradinhos para legenda
-    fig = go.Figure()
-    cores = ["#008000", "#7FFF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]
-
-    for i, cor in enumerate(cores):
-        fig.add_trace(go.Bar(
-            x=[risco_percentual_filtrado.loc[i, 'Categoria de Risco']],
-            y=[risco_percentual_filtrado.loc[i, '%']],
-            name=f"Risco {i}",
-            marker_color=cor
-        ))
-
-    fig.update_layout(
-        title="Distribuição de Risco",
-        xaxis_title="Categoria de Risco",
-        yaxis_title="% em Hexágonos",
-        autosize=True,
-        barmode="group",
-        legend=dict(
-            title="Risco",
-            itemsizing="constant",
-            borderwidth=1
-        )
-    )
-
-    # Exibir gráfico no Streamlit
-    st.sidebar.plotly_chart(fig)
+# Exibir gráfico no Streamlit
+st.sidebar.plotly_chart(fig)
 
 
