@@ -29,6 +29,13 @@ st.markdown(
         color: #2F50C1 !important; /* Texto azul */
     }
 
+    /* Textos do sidebar */
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] label {
+        color: #2F50C1 !important; /* Azul escuro */
+        font-weight: bold;
+    }
+
     /* Título */
     h1 {
         color: #2F50C1 !important; /* Azul escuro */
@@ -41,14 +48,14 @@ st.markdown(
         background-color: white !important; /* Fundo branco */
     }
 
-    /* Texto dentro dos selectboxes */
+    /* Texto dentro dos selectboxes e multiselects */
     .stSelectbox div, .stMultiselect div {
         color: #2F50C1 !important; /* Texto azul */
     }
 
     /* Fundo das opções selecionadas (tags dentro dos multiselects) */
     .st-multi-select-box > div > div {
-        background-color: #FF5722 !important; /* Laranja */
+        background-color: #FF5722 !important; /* Fundo laranja */
         color: white !important; /* Texto branco */
     }
 
@@ -225,32 +232,25 @@ for i, cor in enumerate(cores):
     ))
 
 fig.update_layout(
-    title={
-        'text': f"Distribuição de Risco ({tipo_risco})",
-        'y': 0.95,  # Posição vertical do título
-        'x': 0.5,   # Posição horizontal (centralizado)
-        'xanchor': 'center',
-        'yanchor': 'top',
-        'font': {'color': '#2F50C1'}  # Cor do título
-    },
+    title=f"Distribuição de Risco ({tipo_risco})",
     xaxis_title="Categoria de Risco",
     yaxis_title="% em Hexágonos",
     xaxis=dict(
-        title=dict(font=dict(color='#2F50C1')),  # Cor do título do eixo X
-        tickfont=dict(color='#2F50C1')  # Cor dos valores do eixo X
+        title=dict(font=dict(color='#2F50C1')),
+        tickfont=dict(color='#2F50C1')
     ),
     yaxis=dict(
-        title=dict(font=dict(color='#2F50C1')),  # Cor do título do eixo Y
-        tickfont=dict(color='#2F50C1')  # Cor dos valores do eixo Y
+        title=dict(font=dict(color='#2F50C1')),
+        tickfont=dict(color='#2F50C1')
     ),
     autosize=True,
     barmode="group",
     legend=dict(
-        title=dict(font=dict(color='#2F50C1')),  # Cor do título da legenda
-        font=dict(color='#2F50C1')  # Cor do texto da legenda
+        title=dict(font=dict(color='#2F50C1')),
+        font=dict(color='#2F50C1')
     )
 )
 
-# Exibir o gráfico no Streamlit
 st.sidebar.plotly_chart(fig, use_container_width=True)
+
 
