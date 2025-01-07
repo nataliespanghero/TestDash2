@@ -15,7 +15,7 @@ st.markdown(
     <style>
     /* Fundo geral */
     .stApp {
-        background-color: #2F50C1; /* Azul de fundo geral */
+        background-color: #2F50C1; /* Azul fundo geral */
     }
 
     /* Sidebar */
@@ -33,14 +33,12 @@ st.markdown(
         color: #2F50C1; /* Azul */
     }
 
-    /* Texto geral */
-    body, .stApp {
-        color: #2F50C1; /* Azul */
+    /* Fundo dos selectboxes */
+    .stSelectbox, .stMultiselect {
+        background-color: #E7E7E9; /* Fundo cinza */
     }
-
-    /* Fundo do selectbox/multiselect */
     .stSelectbox > div:first-child, .stMultiselect > div:first-child {
-        background-color: #E7E7E9; /* Cinza claro */
+        background-color: #E7E7E9; /* Fundo cinza */
         color: #2F50C1; /* Azul */
     }
 
@@ -52,6 +50,16 @@ st.markdown(
     /* Texto do gráfico */
     .plotly .legend text, .plotly .title, .plotly .xtick, .plotly .ytick {
         fill: #2F50C1 !important; /* Texto do gráfico em azul */
+    }
+
+    /* Área superior do Streamlit (barra preta) */
+    header {
+        background-color: #2F50C1 !important; /* Azul */
+    }
+
+    /* Fundo do mapa (Folium) */
+    .folium-map {
+        background-color: white !important; /* Fundo branco */
     }
     </style>
     """,
