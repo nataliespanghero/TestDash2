@@ -15,7 +15,12 @@ st.markdown(
     <style>
     /* Fundo geral */
     .stApp {
-        background-color: #2F50C1; /* Azul fundo geral */
+        background-color: white; /* Fundo geral branco */
+    }
+
+    /* Barra superior */
+    header {
+        background-color: #2F50C1 !important; /* Azul superior */
     }
 
     /* Sidebar */
@@ -23,23 +28,22 @@ st.markdown(
         background-color: white; /* Fundo branco */
     }
 
-    /* Título */
+    /* Texto do Título */
     .stMarkdown h1 {
-        color: white; /* Título em branco */
+        color: #2F50C1 !important; /* Azul escuro */
+        font-size: 24px; /* Ajuste no tamanho */
     }
 
-    /* Texto dos rótulos na sidebar */
-    .stSidebar h2, .stSidebar label {
-        color: #2F50C1; /* Azul */
-    }
-
-    /* Fundo dos selectboxes */
+    /* Fundo dos selectboxes e multiselects */
     .stSelectbox, .stMultiselect {
-        background-color: #E7E7E9; /* Fundo cinza */
+        background-color: white !important; /* Fundo branco */
+        color: #2F50C1 !important; /* Texto azul */
     }
-    .stSelectbox > div:first-child, .stMultiselect > div:first-child {
-        background-color: #E7E7E9; /* Fundo cinza */
-        color: #2F50C1; /* Azul */
+
+    /* Caixinhas dentro dos multiselects */
+    div[role="listbox"] > div {
+        background-color: white !important; /* Fundo branco */
+        color: #2F50C1 !important; /* Texto azul */
     }
 
     /* Fundo do gráfico */
@@ -50,11 +54,6 @@ st.markdown(
     /* Texto do gráfico */
     .plotly .legend text, .plotly .title, .plotly .xtick, .plotly .ytick {
         fill: #2F50C1 !important; /* Texto do gráfico em azul */
-    }
-
-    /* Área superior do Streamlit (barra preta) */
-    header {
-        background-color: #2F50C1 !important; /* Azul */
     }
 
     /* Fundo do mapa (Folium) */
