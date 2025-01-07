@@ -15,7 +15,7 @@ st.markdown(
     <style>
     /* Fundo geral */
     .stApp {
-        background-color: white; /* Fundo geral branco */
+        background-color: white !important; /* Fundo geral branco */
     }
 
     /* Barra superior */
@@ -25,24 +25,24 @@ st.markdown(
 
     /* Sidebar */
     section[data-testid="stSidebar"] {
-        background-color: white; /* Fundo branco */
+        background-color: white !important; /* Fundo branco */
+        color: #2F50C1 !important; /* Texto azul */
     }
 
-    /* Texto do Título */
-    .stMarkdown h1 {
+    /* Título */
+    h1 {
         color: #2F50C1 !important; /* Azul escuro */
-        font-size: 24px; /* Ajuste no tamanho */
+        font-size: 24px;
+        font-weight: bold;
     }
 
     /* Fundo dos selectboxes e multiselects */
     .stSelectbox, .stMultiselect {
         background-color: white !important; /* Fundo branco */
-        color: #2F50C1 !important; /* Texto azul */
     }
 
-    /* Caixinhas dentro dos multiselects */
-    div[role="listbox"] > div {
-        background-color: white !important; /* Fundo branco */
+    /* Texto dentro dos selectboxes */
+    .stSelectbox div, .stMultiselect div {
         color: #2F50C1 !important; /* Texto azul */
     }
 
