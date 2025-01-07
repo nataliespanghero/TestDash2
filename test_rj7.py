@@ -15,40 +15,43 @@ st.markdown(
     <style>
     /* Fundo geral */
     .stApp {
-        background-color: white; /* Fundo branco */
+        background-color: #2F50C1; /* Azul de fundo geral */
     }
 
     /* Sidebar */
     section[data-testid="stSidebar"] {
-        background-color: #E7E7E9; /* Fundo da sidebar */
+        background-color: white; /* Fundo branco */
     }
 
-    /* Texto dos rótulos */
+    /* Título */
+    .stMarkdown h1 {
+        color: white; /* Título em branco */
+    }
+
+    /* Texto dos rótulos na sidebar */
     .stSidebar h2, .stSidebar label {
-        color: #142782; /* Azul */
+        color: #2F50C1; /* Azul */
     }
 
     /* Texto geral */
     body, .stApp {
-        color: #142782; /* Azul */
+        color: #2F50C1; /* Azul */
     }
 
-    /* Fundo do selectbox */
-    .stSelectbox > div:first-child {
-        background-color: white; /* Fundo branco */
-        color: #142782; /* Azul */
+    /* Fundo do selectbox/multiselect */
+    .stSelectbox > div:first-child, .stMultiselect > div:first-child {
+        background-color: #E7E7E9; /* Cinza claro */
+        color: #2F50C1; /* Azul */
     }
 
-    /* Caixinhas dentro do selectbox/multiselect */
-    div[role="listbox"] > div {
-        background-color: #FF5722; /* Fundo laranja */
-        color: white; /* Texto branco */
+    /* Fundo do gráfico */
+    .element-container {
+        background-color: white !important; /* Fundo branco */
     }
 
-    /* Opções selecionadas nas caixas */
-    .stSelectbox div[data-baseweb="select"] span {
-        background-color: #FF5722 !important; /* Fundo laranja */
-        color: white !important; /* Texto branco */
+    /* Texto do gráfico */
+    .plotly .legend text, .plotly .title, .plotly .xtick, .plotly .ytick {
+        fill: #2F50C1 !important; /* Texto do gráfico em azul */
     }
     </style>
     """,
