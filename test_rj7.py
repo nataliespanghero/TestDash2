@@ -6,6 +6,9 @@ from folium import Choropleth, LayerControl, GeoJsonTooltip
 from streamlit_folium import st_folium
 import plotly.graph_objects as go
 
+# Configuração do Streamlit deve ser o primeiro comando
+st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
+
 # Configuração de CSS Global
 st.markdown(
     """
@@ -45,9 +48,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# Configuração do Streamlit
-st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
 
 st.title("Dashboard Interativo: Risco de Atropelamento")
 
@@ -183,4 +183,5 @@ with col2:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
 
