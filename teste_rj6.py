@@ -115,7 +115,7 @@ if "Selecionar todos" not in selected_concessions:
 
 # Criar mapa
 if hexagonos_filtrados.empty:
-    st.error("Nenhum hexágono foi encontrado para os filtros aplicados.")
+    st.error("É necessário selecionar o risco.")
 else:
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
 
