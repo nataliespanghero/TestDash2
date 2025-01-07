@@ -23,26 +23,32 @@ st.markdown(
         background-color: #E7E7E9; /* Fundo da sidebar */
     }
 
-    /* Texto geral */
-    body, .stApp, .stSelectbox, .stSidebar {
-        color: #142782; /* Cor do texto */
+    /* Texto dos rótulos */
+    .stSidebar h2, .stSidebar label {
+        color: #142782; /* Azul */
     }
 
-    /* Caixinhas dentro do selectbox/multiselect */
-    .stSelectbox > div div[role="listbox"] > div {
-        background-color: #FF5722; /* Fundo laranja */
-        color: white; /* Texto branco */
+    /* Texto geral */
+    body, .stApp {
+        color: #142782; /* Azul */
     }
 
     /* Fundo do selectbox */
     .stSelectbox > div:first-child {
         background-color: white; /* Fundo branco */
-        color: #142782; /* Texto azul */
+        color: #142782; /* Azul */
     }
 
-    /* Legenda e título do gráfico */
-    .plotly .legend, .plotly .title {
-        color: #142782 !important; /* Texto azul */
+    /* Caixinhas dentro do selectbox/multiselect */
+    div[role="listbox"] > div {
+        background-color: #FF5722; /* Fundo laranja */
+        color: white; /* Texto branco */
+    }
+
+    /* Opções selecionadas nas caixas */
+    .stSelectbox div[data-baseweb="select"] span {
+        background-color: #FF5722 !important; /* Fundo laranja */
+        color: white !important; /* Texto branco */
     }
     </style>
     """,
@@ -55,6 +61,32 @@ st.title("Dashboard Interativo: Risco de Atropelamento")
 malha_viaria = gpd.read_file('Risco3.geojson')
 hexagonos_h3 = gpd.read_file('H3.geojson')
 areas_urbanas = gpd.read_file('AU.geojson')
+
+# Calcular riscos para ambos os tipos (diurno e noturno)
+if 'risk_mean_KmP' not in hexagonos_h3.columns or 'risk_mean_KmP_dark' not in hexagonos_h3.columns:
+    for index, row in hexagonos_h3.iterrows():
+        segmentos_no_hex = malha_viaria[malha_viaria.intersects(row.geometry)]
+        
+        if not segmentos_no_hex.empty:
+            # Risco Diurno
+            hexagonos_h3.loc[index, 'risk_mean_KmP'] = segmentos_no_hex['KmP'].mean()
+            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP'] = segmentos_no_hex['KmP'].mean().round()
+            
+            # Risco Noturno
+            hexagonos_h3.loc[index, 'risk_mean_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean()
+            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean().round()
+        else:
+            # Caso não haja segmentos
+            hexagonos_h3.loc[index, 'risk_mean_KmP'] = 0
+            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP'] = 0
+            hexagonos_h3.loc[index, 'risk_mean_KmP_dark'] = 0
+            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP_dark'] = 0
+
+    # Salvar o GeoJSON com todas as colunas pré-calculadas
+    hexagonos_h3.to_file('hexagonos_h3_com_risco.geojson', driver='GeoJSON')
+
+# Recarregar o GeoDataFrame já com os valores calculados
+hexagonos_h3 = gpd.read_file('hexagonos_h3_com_risco.geojson')
 
 # Escolha do tipo de risco pelo usuário
 st.sidebar.header("Configurações de Risco")
@@ -107,81 +139,77 @@ if "Selecionar todos" not in selected_concessions:
             hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
         ]
 
-# Divisão em colunas (mapa à esquerda, gráfico à direita)
-col1, col2 = st.columns([2, 1])  # 2/3 para o mapa, 1/3 para o gráfico
+# Criar mapa
+if hexagonos_filtrados.empty:
+    st.error("É necessário selecionar o risco.")
+else:
+    m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
 
-with col1:
-    # Criar mapa
-    if hexagonos_filtrados.empty:
-        st.error("Nenhum hexágono foi encontrado para os filtros aplicados.")
-    else:
-        m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
+    # Adicionar camada de hexágonos com risco médio
+    Choropleth(
+        geo_data=hexagonos_filtrados,
+        data=hexagonos_filtrados,
+        columns=["index", coluna_risco_rounded],
+        key_on="feature.properties.index",
+        fill_color="RdYlGn_r",
+        fill_opacity=0.6,
+        line_opacity=0.2,
+        legend_name=f"Risco Médio ({tipo_risco})",
+        name="Hexágonos Selecionados",
+        highlight=True,
+    ).add_to(m)
 
-        Choropleth(
-            geo_data=hexagonos_filtrados,
-            data=hexagonos_h3,
-            columns=["index", coluna_risco_rounded],
-            key_on="feature.properties.index",
-            fill_color="RdYlGn_r",
-            fill_opacity=0.6,
-            line_opacity=0.2,
-            legend_name=f"Risco Médio ({tipo_risco})",
-            name="Hexágonos Selecionados",
-            highlight=True,
-        ).add_to(m)
+    folium.GeoJson(
+        hexagonos_filtrados,
+        name="Hexágonos",
+        style_function=lambda x: {
+            'color': 'lightgray',
+            'weight': 0.3,
+            'fillOpacity': 0
+        },
+        tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
+    ).add_to(m)
 
+    if show_areas_urbanas == "Mostrar":
         folium.GeoJson(
-            hexagonos_filtrados,
-            name="Hexágonos",
-            style_function=lambda x: {
-                'color': 'lightgray',
-                'weight': 0.3,
-                'fillOpacity': 0
-            },
-            tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
+            areas_urbanas,
+            name="Áreas Urbanas",
+            style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
         ).add_to(m)
 
-        if show_areas_urbanas == "Mostrar":
-            folium.GeoJson(
-                areas_urbanas,
-                name="Áreas Urbanas",
-                style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
-            ).add_to(m)
+    LayerControl().add_to(m)
 
-        LayerControl().add_to(m)
+    st_folium(m, width=800, height=600)
 
-        st_folium(m, width=800, height=600)
+# Gráfico
+risco_percentual_filtrado = (
+    hexagonos_filtrados[coluna_risco_rounded]
+    .value_counts(normalize=True)
+    .reindex(range(7), fill_value=0)
+    .reset_index()
+)
+risco_percentual_filtrado.columns = ["Categoria de Risco", "%"]
+risco_percentual_filtrado["%"] *= 100
 
-with col2:
-    # Gráfico
-    risco_percentual_filtrado = (
-        hexagonos_filtrados[coluna_risco_rounded]
-        .value_counts(normalize=True)
-        .reindex(range(7), fill_value=0)
-        .reset_index()
-    )
-    risco_percentual_filtrado.columns = ["Categoria de Risco", "%"]
-    risco_percentual_filtrado["%"] *= 100
+fig = go.Figure()
+cores = ["#008000", "#7FFF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]
 
-    fig = go.Figure()
-    cores = ["#008000", "#7FFF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]
+for i, cor in enumerate(cores):
+    fig.add_trace(go.Bar(
+        x=[risco_percentual_filtrado.loc[i, 'Categoria de Risco']],
+        y=[risco_percentual_filtrado.loc[i, '%']],
+        name=f"Risco {i}",
+        marker_color=cor
+    ))
 
-    for i, cor in enumerate(cores):
-        fig.add_trace(go.Bar(
-            x=[risco_percentual_filtrado.loc[i, 'Categoria de Risco']],
-            y=[risco_percentual_filtrado.loc[i, '%']],
-            name=f"Risco {i}",
-            marker_color=cor
-        ))
+fig.update_layout(
+    title=f"Distribuição de Risco ({tipo_risco})",
+    xaxis_title="Categoria de Risco",
+    yaxis_title="% em Hexágonos",
+    autosize=True,
+    barmode="group",
+)
 
-    fig.update_layout(
-        title=f"Distribuição de Risco ({tipo_risco})",
-        xaxis_title="Categoria de Risco",
-        yaxis_title="% em Hexágonos",
-        autosize=True,
-        barmode="group",
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
+st.sidebar.plotly_chart(fig, use_container_width=True)
 
 
