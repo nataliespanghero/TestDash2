@@ -72,7 +72,7 @@ st.markdown(
 )
 
 # Adicionar a imagem no topo da sidebar com tamanho ajustado
-st.sidebar.image("logo.png", width=200)  # Reduzido para ~30% (ajuste manual para 200px de largura)
+st.sidebar.image("logo.png", width=130)  # Reduzido para ~20% (ajuste manual para 130px de largura)
 
 # Título principal
 st.title("Dashboard Interativo: Risco de Atropelamento")
