@@ -3,8 +3,9 @@ import streamlit as st
 import geopandas as gpd
 import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
+from folium.plugins import Draw
+from shapely.geometry import box, shape, LineString, Polygon
 from streamlit_folium import st_folium
-from shapely.geometry import box
 import plotly.graph_objects as go
 
 # Configuração do Streamlit
@@ -155,58 +156,54 @@ coordenadas_input = st.sidebar.text_input(
 # Processar o campo de entrada
 if coordenadas_input:
     try:
-        # Separar as coordenadas de início e fim
         coords_parts = coordenadas_input.split('|')
-        if len(coords_parts) != 2:
-            raise ValueError("Por favor, use o formato correto: lat_ini, lon_ini | lat_fim, lon_fim")
-        
-        # Extrair e converter as coordenadas
         lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
         lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
-        
-        # Validar limites das coordenadas
-        if not (-90 <= lat_ini <= 90 and -90 <= lat_fim <= 90):
-            raise ValueError("Latitudes devem estar entre -90 e 90.")
-        if not (-180 <= lon_ini <= 180 and -180 <= lon_fim <= 180):
-            raise ValueError("Longitudes devem estar entre -180 e 180.")
-        
-        # Criar a bounding box
         bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
-        st.sidebar.success("Coordenadas válidas. Aplicando filtro...")
-        
-        # Filtrar os dados geoespaciais com a bounding box
         hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(bbox)]
-        segmentos_filtrados = malha_viaria[malha_viaria.intersects(bbox)]
-    except ValueError as e:
-        st.sidebar.error(f"Erro: {e}")
+    except ValueError:
+        st.sidebar.error("Erro: Formato inválido nas coordenadas.")
 else:
-    # Se não houver coordenadas, usar os dados completos
     hexagonos_filtrados = hexagonos_h3.copy()
-    segmentos_filtrados = malha_viaria.copy()
-
-# Aplicar filtros adicionais
-if "Selecionar todos" not in selected_risks:
-    selected_risk_values = [int(r.split()[1]) for r in selected_risks]
-    hexagonos_filtrados = hexagonos_filtrados[
-        hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
-    ]
-
-if "Selecionar todos" not in selected_concessions:
-    segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
-    if not segmentos_filtrados.empty:
-        hexagonos_filtrados = hexagonos_filtrados[
-            hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
-        ]
 
 # Aba 1: Mapa Interativo
 with tabs[0]:
     st.header("Mapa Interativo")
 
-    if hexagonos_filtrados.empty:
-        st.error("Nenhum hexágono atende aos critérios selecionados.")
-    else:
-        m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
+    # Mapa base
+    m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
+    draw = Draw(export=True)  # Adicionar ferramenta de desenho
+    draw.add_to(m)
 
+    # Renderizar o mapa e capturar o desenho
+    map_output = st_folium(m, width=800, height=600)
+    desenho = map_output.get("last_active_drawing")
+
+    # Processar o desenho
+    if desenho:
+        try:
+            geom = shape(desenho["geometry"])
+            hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(geom)]
+            st.success("Geometria desenhada capturada com sucesso!")
+        except Exception as e:
+            st.error(f"Erro ao processar geometria: {e}")
+
+    # Aplicar filtros adicionais
+    if "Selecionar todos" not in selected_risks:
+        selected_risk_values = [int(r.split()[1]) for r in selected_risks]
+        hexagonos_filtrados = hexagonos_filtrados[
+            hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
+        ]
+
+    if "Selecionar todos" not in selected_concessions:
+        segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
+        if not segmentos_filtrados.empty:
+            hexagonos_filtrados = hexagonos_filtrados[
+                hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
+            ]
+
+    # Criar mapa com hexágonos filtrados
+    if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
             data=hexagonos_filtrados,
@@ -217,18 +214,6 @@ with tabs[0]:
             line_opacity=0.2,
             legend_name=f"Risco Médio ({tipo_risco})",
             name="Hexágonos Selecionados",
-            highlight=True,
-        ).add_to(m)
-
-        folium.GeoJson(
-            hexagonos_filtrados,
-            name="Hexágonos",
-            style_function=lambda x: {
-                'color': 'lightgray',
-                'weight': 0.3,
-                'fillOpacity': 0
-            },
-            tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
         ).add_to(m)
 
         if show_areas_urbanas == "Mostrar":
@@ -239,7 +224,6 @@ with tabs[0]:
             ).add_to(m)
 
         LayerControl().add_to(m)
-        st_folium(m, width=800, height=600)
 
 # Aba 2: Gráfico
 with tabs[1]:
@@ -285,6 +269,7 @@ with tabs[1]:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
 
 
 
