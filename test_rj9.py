@@ -30,13 +30,6 @@ st.markdown(
         color: #2F50C1 !important;
     }
 
-    /* Centralizar imagem da sidebar */
-    .sidebar-logo-container {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px; /* Espaço abaixo da imagem */
-    }
-
     /* Textos do sidebar */
     section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] label {
@@ -56,13 +49,13 @@ st.markdown(
         fill: #2F50C1 !important;
     }
 
-    /* Texto das opções dos selectboxes */
+    /* Texto das opções nos selectboxes */
     .stSelectbox div, .stMultiselect div, .stRadio div {
         color: #2F50C1 !important; /* Azul */
     }
 
-    /* Bordas dos filtros (selectboxes e multiselects) */
-    .stSelectbox, .stMultiselect, .stRadio {
+    /* Bordas das caixinhas de filtros */
+    div[data-baseweb="select"], div[data-baseweb="input"] {
         border: 2px solid #2F50C1 !important; /* Borda azul */
         border-radius: 5px !important;
         padding: 5px !important;
@@ -78,15 +71,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Adicionar a imagem no topo da sidebar com centralização
-st.sidebar.markdown(
-    """
-    <div class="sidebar-logo-container">
-        <img src="logo.png" alt="Logo" style="width: 130px;">
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# Adicionar a imagem no topo da sidebar com tamanho ajustado
+st.sidebar.image("logo.png", width=130)  # Largura ajustada para ~20% (130px)
 
 # Título principal
 st.title("Dashboard Interativo: Risco de Atropelamento")
@@ -257,6 +243,7 @@ fig.update_layout(
 )
 
 st.sidebar.plotly_chart(fig, use_container_width=True)
+
 
 
 
