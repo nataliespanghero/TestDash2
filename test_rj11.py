@@ -15,49 +15,36 @@ st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", l
 st.markdown(
     """
     <style>
-    /* Fundo geral */
     .stApp {
         background-color: white !important;
     }
-
-    /* Barra superior */
     header {
         background-color: #2F50C1 !important;
     }
-
-    /* Sidebar */
     section[data-testid="stSidebar"] {
         background-color: white !important;
         color: #2F50C1 !important;
     }
-
-    /* Textos do sidebar */
-    section[data-testid="stSidebar"] h1,
-    section[data-testid="stSidebar"] label {
+    section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] label {
         color: #2F50C1 !important;
         font-weight: bold;
     }
-
-    /* Título */
     h1 {
         color: #2F50C1 !important;
         font-size: 24px;
         font-weight: bold;
     }
-
-    /* Texto das opções nos selectboxes */
+    .plotly .title {
+        fill: #2F50C1 !important;
+    }
     .stSelectbox div, .stMultiselect div, .stRadio div {
         color: #2F50C1 !important;
     }
-
-    /* Bordas das caixinhas de filtros */
     div[data-baseweb="select"], div[data-baseweb="input"] {
         border: 2px solid #2F50C1 !important;
         border-radius: 5px !important;
         padding: 5px !important;
     }
-
-    /* Fundo das opções selecionadas */
     .st-multi-select-box > div > div {
         background-color: #2F50C1 !important;
         color: white !important;
@@ -68,7 +55,7 @@ st.markdown(
 )
 
 # Adicionar a imagem no topo da sidebar com tamanho ajustado
-st.sidebar.image("logo.png", width=130)  # Largura ajustada para ~20% (130px)
+st.sidebar.image("logo.png", width=130)
 
 # Título principal
 st.title("Dashboard Interativo: Risco de Atropelamento")
@@ -87,35 +74,23 @@ if 'risk_mean_KmP' not in hexagonos_h3.columns or 'risk_mean_KmP_dark' not in he
         segmentos_no_hex = malha_viaria[malha_viaria.intersects(row.geometry)]
 
         if not segmentos_no_hex.empty:
-            # Risco Diurno
             hexagonos_h3.loc[index, 'risk_mean_KmP'] = segmentos_no_hex['KmP'].mean()
             hexagonos_h3.loc[index, 'risk_mean_rounded_KmP'] = segmentos_no_hex['KmP'].mean().round()
-
-            # Risco Noturno
             hexagonos_h3.loc[index, 'risk_mean_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean()
             hexagonos_h3.loc[index, 'risk_mean_rounded_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean().round()
         else:
-            # Caso não haja segmentos
             hexagonos_h3.loc[index, 'risk_mean_KmP'] = 0
             hexagonos_h3.loc[index, 'risk_mean_rounded_KmP'] = 0
             hexagonos_h3.loc[index, 'risk_mean_KmP_dark'] = 0
             hexagonos_h3.loc[index, 'risk_mean_rounded_KmP_dark'] = 0
 
-    # Salvar o GeoJSON com todas as colunas pré-calculadas
     hexagonos_h3.to_file('hexagonos_h3_com_risco.geojson', driver='GeoJSON')
 
-# Recarregar o GeoDataFrame já com os valores calculados
 hexagonos_h3 = gpd.read_file('hexagonos_h3_com_risco.geojson')
 
 # Escolha do tipo de risco pelo usuário
 st.sidebar.header("Configurações de Risco")
-tipo_risco = st.sidebar.selectbox(
-    "Selecione o tipo de risco:",
-    options=["Diurno", "Noturno"],
-    index=0  # Padrão: Diurno
-)
-
-# Determinar colunas a serem usadas com base na escolha
+tipo_risco = st.sidebar.selectbox("Selecione o tipo de risco:", ["Diurno", "Noturno"], index=0)
 coluna_risco = "KmP" if tipo_risco == "Diurno" else "KmP_dark"
 coluna_risco_rounded = f"risk_mean_rounded_{coluna_risco}"
 
@@ -124,63 +99,61 @@ st.sidebar.header("Filtros")
 risks_list = list(range(7))
 selected_risks = st.sidebar.multiselect(
     "Selecione os Riscos:",
-    options=["Selecionar todos"] + [f"Risco {r}" for r in risks_list],
+    ["Selecionar todos"] + [f"Risco {r}" for r in risks_list],
     default=["Selecionar todos"]
 )
-
 concessions_list = malha_viaria['empresa'].unique().tolist()
 selected_concessions = st.sidebar.multiselect(
     "Selecione a Concessão:",
-    options=["Selecionar todos"] + concessions_list,
+    ["Selecionar todos"] + concessions_list,
     default=["Selecionar todos"]
 )
+show_areas_urbanas = st.sidebar.selectbox("Áreas Urbanas:", ["Mostrar", "Esconder"], index=1)
 
-show_areas_urbanas = st.sidebar.selectbox(
-    "Áreas Urbanas:",
-    options=["Mostrar", "Esconder"],
-    index=1
-)
-
-# Filtro por coordenadas em um único campo
+# Filtro por coordenadas
 st.sidebar.header("Filtrar por Coordenadas")
 coordenadas_input = st.sidebar.text_input(
     "Insira as coordenadas (formato: lat_ini, lon_ini | lat_fim, lon_fim):",
     placeholder="-22.817762, -43.372672 | -22.664081, -43.222538"
 )
 
+# Processar coordenadas ou desenho
+usar_geometria_desenhada = False
+usar_filtro_coordenadas = False
+
+if coordenadas_input:
+    try:
+        coords_parts = coordenadas_input.split('|')
+        lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
+        lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
+        bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
+        usar_filtro_coordenadas = True
+    except ValueError:
+        st.sidebar.error("Erro: Formato inválido.")
+
 # Aba 1: Mapa Interativo
 with tabs[0]:
     st.header("Mapa Interativo")
-
-    # Mapa base
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
-    draw = Draw(export=True)  # Adicionar ferramenta de desenho
+    draw = Draw(export=True)
     draw.add_to(m)
 
-    # Renderizar o mapa e capturar o desenho
     map_output = st_folium(m, width=800, height=600)
     desenho = map_output.get("last_active_drawing")
 
-    # Processar hexágonos
     hexagonos_filtrados = hexagonos_h3.copy()
 
     if desenho:
         try:
             geom = shape(desenho["geometry"])
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
+            usar_geometria_desenhada = True
         except Exception:
-            st.error("Erro ao processar geometria desenhada.")
-    elif coordenadas_input:
-        try:
-            coords_parts = coordenadas_input.split('|')
-            lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
-            lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
-            bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
-            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
-        except ValueError:
-            st.sidebar.error("Erro: Formato inválido nas coordenadas.")
+            st.error("Erro ao processar desenho.")
 
-    # Aplicar filtros adicionais
+    if usar_filtro_coordenadas:
+        hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
+
     if "Selecionar todos" not in selected_risks:
         selected_risk_values = [int(r.split()[1]) for r in selected_risks]
         hexagonos_filtrados = hexagonos_filtrados[
@@ -194,7 +167,6 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
-    # Criar mapa com hexágonos filtrados
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -206,6 +178,13 @@ with tabs[0]:
             line_opacity=0.2,
             legend_name=f"Risco Médio ({tipo_risco})",
             name="Hexágonos Selecionados",
+        ).add_to(m)
+
+        folium.GeoJson(
+            hexagonos_filtrados,
+            name="Hexágonos",
+            style_function=lambda x: {'color': 'lightgray', 'weight': 0.3, 'fillOpacity': 0},
+            tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
         ).add_to(m)
 
         if show_areas_urbanas == "Mostrar":
@@ -244,23 +223,15 @@ with tabs[1]:
         title=dict(text=f"Distribuição de Risco ({tipo_risco})", font=dict(color="#2F50C1")),
         xaxis_title="Categoria de Risco",
         yaxis_title="% em Hexágonos",
-        xaxis=dict(
-            title=dict(font=dict(color='#2F50C1')),
-            tickfont=dict(color='#2F50C1')
-        ),
-        yaxis=dict(
-            title=dict(font=dict(color='#2F50C1')),
-            tickfont=dict(color='#2F50C1')
-        ),
+        xaxis=dict(title=dict(font=dict(color='#2F50C1')), tickfont=dict(color='#2F50C1')),
+        yaxis=dict(title=dict(font=dict(color='#2F50C1')), tickfont=dict(color='#2F50C1')),
         autosize=True,
         barmode="group",
-        legend=dict(
-            title=dict(font=dict(color='#2F50C1')),
-            font=dict(color='#2F50C1')
-        )
+        legend=dict(title=dict(font=dict(color='#2F50C1')), font=dict(color='#2F50C1'))
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
 
 
 
