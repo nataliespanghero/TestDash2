@@ -145,28 +145,40 @@ show_areas_urbanas = st.sidebar.selectbox(
     index=1
 )
 
-# Filtro por coordenadas
+# Filtro por coordenadas em um único campo
 st.sidebar.header("Filtrar por Coordenadas")
-lat_ini = st.sidebar.text_input("Latitude Inicial")
-lon_ini = st.sidebar.text_input("Longitude Inicial")
-lat_fim = st.sidebar.text_input("Latitude Final")
-lon_fim = st.sidebar.text_input("Longitude Final")
+coordenadas_input = st.sidebar.text_input(
+    "Insira as coordenadas (formato: lat_ini, lon_ini | lat_fim, lon_fim):",
+    placeholder="-22.817762, -43.372672 | -22.664081, -43.222538"
+)
 
-# Aplicar filtro por coordenadas, se fornecido
-if all([lat_ini, lon_ini, lat_fim, lon_fim]):
+# Processar o campo de entrada
+if coordenadas_input:
     try:
-        # Converter para float
-        lat_ini, lon_ini, lat_fim, lon_fim = map(float, [lat_ini, lon_ini, lat_fim, lon_fim])
-
+        # Separar as coordenadas de início e fim
+        coords_parts = coordenadas_input.split('|')
+        if len(coords_parts) != 2:
+            raise ValueError("Por favor, use o formato correto: lat_ini, lon_ini | lat_fim, lon_fim")
+        
+        # Extrair e converter as coordenadas
+        lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
+        lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
+        
+        # Validar limites das coordenadas
+        if not (-90 <= lat_ini <= 90 and -90 <= lat_fim <= 90):
+            raise ValueError("Latitudes devem estar entre -90 e 90.")
+        if not (-180 <= lon_ini <= 180 and -180 <= lon_fim <= 180):
+            raise ValueError("Longitudes devem estar entre -180 e 180.")
+        
         # Criar a bounding box
         bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
         st.sidebar.success("Coordenadas válidas. Aplicando filtro...")
-
+        
         # Filtrar os dados geoespaciais com a bounding box
         hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(bbox)]
         segmentos_filtrados = malha_viaria[malha_viaria.intersects(bbox)]
-    except ValueError:
-        st.sidebar.error("Por favor, insira valores numéricos válidos para as coordenadas.")
+    except ValueError as e:
+        st.sidebar.error(f"Erro: {e}")
 else:
     # Se não houver coordenadas, usar os dados completos
     hexagonos_filtrados = hexagonos_h3.copy()
