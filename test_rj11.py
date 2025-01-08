@@ -153,6 +153,10 @@ coordenadas_input = st.sidebar.text_input(
     placeholder="-22.817762, -43.372672 | -22.664081, -43.222538"
 )
 
+# Inicializar variáveis de controle
+usar_geometria_desenhada = False
+usar_filtro_coordenadas = False
+
 # Processar o campo de entrada
 if coordenadas_input:
     try:
@@ -160,11 +164,9 @@ if coordenadas_input:
         lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
         lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
         bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
-        hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(bbox)]
+        usar_filtro_coordenadas = True
     except ValueError:
         st.sidebar.error("Erro: Formato inválido nas coordenadas.")
-else:
-    hexagonos_filtrados = hexagonos_h3.copy()
 
 # Aba 1: Mapa Interativo
 with tabs[0]:
@@ -183,10 +185,17 @@ with tabs[0]:
     if desenho:
         try:
             geom = shape(desenho["geometry"])
-            hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(geom)]
-            st.success("Geometria desenhada capturada com sucesso!")
+            usar_geometria_desenhada = True
         except Exception as e:
             st.error(f"Erro ao processar geometria: {e}")
+
+    # Definir hexágonos filtrados
+    if usar_geometria_desenhada:
+        hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(geom)]
+    elif usar_filtro_coordenadas:
+        hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(bbox)]
+    else:
+        hexagonos_filtrados = hexagonos_h3.copy()
 
     # Aplicar filtros adicionais
     if "Selecionar todos" not in selected_risks:
