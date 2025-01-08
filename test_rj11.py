@@ -4,7 +4,7 @@ import geopandas as gpd
 import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
 from folium.plugins import Draw
-from shapely.geometry import box, shape, LineString, Polygon
+from shapely.geometry import box, shape
 from streamlit_folium import st_folium
 import plotly.graph_objects as go
 
@@ -45,19 +45,14 @@ st.markdown(
         font-weight: bold;
     }
 
-    /* Título do gráfico */
-    .plotly .title {
-        fill: #2F50C1 !important;
-    }
-
     /* Texto das opções nos selectboxes */
     .stSelectbox div, .stMultiselect div, .stRadio div {
-        color: #2F50C1 !important; /* Azul */
+        color: #2F50C1 !important;
     }
 
     /* Bordas das caixinhas de filtros */
     div[data-baseweb="select"], div[data-baseweb="input"] {
-        border: 2px solid #2F50C1 !important; /* Borda azul */
+        border: 2px solid #2F50C1 !important;
         border-radius: 5px !important;
         padding: 5px !important;
     }
@@ -153,21 +148,6 @@ coordenadas_input = st.sidebar.text_input(
     placeholder="-22.817762, -43.372672 | -22.664081, -43.222538"
 )
 
-# Inicializar variáveis de controle
-usar_geometria_desenhada = False
-usar_filtro_coordenadas = False
-
-# Processar o campo de entrada
-if coordenadas_input:
-    try:
-        coords_parts = coordenadas_input.split('|')
-        lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
-        lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
-        bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
-        usar_filtro_coordenadas = True
-    except ValueError:
-        st.sidebar.error("Erro: Formato inválido nas coordenadas.")
-
 # Aba 1: Mapa Interativo
 with tabs[0]:
     st.header("Mapa Interativo")
@@ -181,21 +161,24 @@ with tabs[0]:
     map_output = st_folium(m, width=800, height=600)
     desenho = map_output.get("last_active_drawing")
 
-    # Processar o desenho
+    # Processar hexágonos
+    hexagonos_filtrados = hexagonos_h3.copy()
+
     if desenho:
         try:
             geom = shape(desenho["geometry"])
-            usar_geometria_desenhada = True
-        except Exception as e:
-            st.error(f"Erro ao processar geometria: {e}")
-
-    # Definir hexágonos filtrados
-    if usar_geometria_desenhada:
-        hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(geom)]
-    elif usar_filtro_coordenadas:
-        hexagonos_filtrados = hexagonos_h3[hexagonos_h3.intersects(bbox)]
-    else:
-        hexagonos_filtrados = hexagonos_h3.copy()
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
+        except Exception:
+            st.error("Erro ao processar geometria desenhada.")
+    elif coordenadas_input:
+        try:
+            coords_parts = coordenadas_input.split('|')
+            lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
+            lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
+            bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
+        except ValueError:
+            st.sidebar.error("Erro: Formato inválido nas coordenadas.")
 
     # Aplicar filtros adicionais
     if "Selecionar todos" not in selected_risks:
