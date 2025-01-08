@@ -1,6 +1,5 @@
 # Importações necessárias
 import streamlit as st
-from streamlit_javascript import st_javascript
 import geopandas as gpd
 import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
@@ -35,17 +34,6 @@ st.markdown(
     section[data-testid="stSidebar"] label {
         color: #2F50C1 !important;
         font-weight: bold;
-    }
-
-    /* Tabs */
-    div[data-testid="stTabs"] > div {
-        background-color: #2F50C1 !important; /* Fundo azul */
-        border-radius: 5px !important;
-        color: white !important; /* Texto branco */
-        padding: 5px;
-    }
-    div[data-testid="stTabLabel"] {
-        color: white !important; /* Texto das abas em branco */
     }
 
     /* Título */
@@ -89,51 +77,77 @@ st.sidebar.image("logo.png", width=130)  # Largura ajustada para ~20% (130px)
 st.title("Dashboard Interativo: Risco de Atropelamento")
 
 # Criação das abas
-tabs = st.tabs(["Principal", "Gráfico"])
+tabs = st.tabs(["Mapa Interativo", "Gráfico de Riscos"])
 
-# Dados necessários
+# Carregar dados
 malha_viaria = gpd.read_file('Risco3.geojson')
 hexagonos_h3 = gpd.read_file('H3.geojson')
 areas_urbanas = gpd.read_file('AU.geojson')
 
-# Aba Principal - Mapa e Filtros
+# Calcular riscos para ambos os tipos (diurno e noturno)
+if 'risk_mean_KmP' not in hexagonos_h3.columns or 'risk_mean_KmP_dark' not in hexagonos_h3.columns:
+    for index, row in hexagonos_h3.iterrows():
+        segmentos_no_hex = malha_viaria[malha_viaria.intersects(row.geometry)]
+
+        if not segmentos_no_hex.empty:
+            # Risco Diurno
+            hexagonos_h3.loc[index, 'risk_mean_KmP'] = segmentos_no_hex['KmP'].mean()
+            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP'] = segmentos_no_hex['KmP'].mean().round()
+
+            # Risco Noturno
+            hexagonos_h3.loc[index, 'risk_mean_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean()
+            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean().round()
+        else:
+            # Caso não haja segmentos
+            hexagonos_h3.loc[index, 'risk_mean_KmP'] = 0
+            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP'] = 0
+            hexagonos_h3.loc[index, 'risk_mean_KmP_dark'] = 0
+            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP_dark'] = 0
+
+    # Salvar o GeoJSON com todas as colunas pré-calculadas
+    hexagonos_h3.to_file('hexagonos_h3_com_risco.geojson', driver='GeoJSON')
+
+# Recarregar o GeoDataFrame já com os valores calculados
+hexagonos_h3 = gpd.read_file('hexagonos_h3_com_risco.geojson')
+
+# Escolha do tipo de risco pelo usuário
+st.sidebar.header("Configurações de Risco")
+tipo_risco = st.sidebar.selectbox(
+    "Selecione o tipo de risco:",
+    options=["Diurno", "Noturno"],
+    index=0  # Padrão: Diurno
+)
+
+# Determinar colunas a serem usadas com base na escolha
+coluna_risco = "KmP" if tipo_risco == "Diurno" else "KmP_dark"
+coluna_risco_rounded = f"risk_mean_rounded_{coluna_risco}"
+
+# Filtros
+st.sidebar.header("Filtros")
+
+risks_list = list(range(7))
+selected_risks = st.sidebar.multiselect(
+    "Selecione os Riscos:",
+    options=["Selecionar todos"] + [f"Risco {r}" for r in risks_list],
+    default=["Selecionar todos"]
+)
+
+concessions_list = malha_viaria['empresa'].unique().tolist()
+selected_concessions = st.sidebar.multiselect(
+    "Selecione a Concessão:",
+    options=["Selecionar todos"] + concessions_list,
+    default=["Selecionar todos"]
+)
+
+show_areas_urbanas = st.sidebar.selectbox(
+    "Áreas Urbanas:",
+    options=["Mostrar", "Esconder"],
+    index=1
+)
+
+# Aba 1: Mapa Interativo
 with tabs[0]:
     st.header("Mapa Interativo")
-    st.sidebar.header("Configurações de Risco")
-    tipo_risco = st.sidebar.selectbox(
-        "Selecione o tipo de risco:",
-        options=["Diurno", "Noturno"],
-        index=0  # Padrão: Diurno
-    )
-
-    # Determinar colunas a serem usadas com base na escolha
-    coluna_risco = "KmP" if tipo_risco == "Diurno" else "KmP_dark"
-    coluna_risco_rounded = f"risk_mean_rounded_{coluna_risco}"
-
-    # Filtros
-    st.sidebar.header("Filtros")
-
-    risks_list = list(range(7))
-    selected_risks = st.sidebar.multiselect(
-        "Selecione os Riscos:",
-        options=["Selecionar todos"] + [f"Risco {r}" for r in risks_list],
-        default=["Selecionar todos"]
-    )
-
-    concessions_list = malha_viaria['empresa'].unique().tolist()
-    selected_concessions = st.sidebar.multiselect(
-        "Selecione a Concessão:",
-        options=["Selecionar todos"] + concessions_list,
-        default=["Selecionar todos"]
-    )
-
-    show_areas_urbanas = st.sidebar.selectbox(
-        "Áreas Urbanas:",
-        options=["Mostrar", "Esconder"],
-        index=1
-    )
-
-    # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
     if "Selecionar todos" not in selected_risks:
@@ -149,13 +163,11 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
-    # Criar mapa
     if hexagonos_filtrados.empty:
         st.error("É necessário selecionar o risco.")
     else:
         m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
 
-        # Adicionar camada de hexágonos com risco médio
         Choropleth(
             geo_data=hexagonos_filtrados,
             data=hexagonos_filtrados,
@@ -188,14 +200,13 @@ with tabs[0]:
             ).add_to(m)
 
         LayerControl().add_to(m)
-
         st_folium(m, width=800, height=600)
 
-# Aba Gráfico
+# Aba 2: Gráfico
 with tabs[1]:
     st.header("Gráfico de Riscos")
     risco_percentual_filtrado = (
-        hexagonos_h3[coluna_risco_rounded]
+        hexagonos_filtrados[coluna_risco_rounded]
         .value_counts(normalize=True)
         .reindex(range(7), fill_value=0)
         .reset_index()
@@ -235,3 +246,4 @@ with tabs[1]:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
