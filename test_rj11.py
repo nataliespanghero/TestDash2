@@ -123,6 +123,28 @@ tipo_risco = st.sidebar.selectbox(
 coluna_risco = "KmP" if tipo_risco == "Diurno" else "KmP_dark"
 coluna_risco_rounded = f"risk_mean_rounded_{coluna_risco}"
 
+# Filtros
+st.sidebar.header("Filtros")
+risks_list = list(range(7))
+selected_risks = st.sidebar.multiselect(
+    "Selecione os Riscos:",
+    options=["Selecionar todos"] + [f"Risco {r}" for r in risks_list],
+    default=["Selecionar todos"]
+)
+
+concessions_list = malha_viaria['empresa'].unique().tolist()
+selected_concessions = st.sidebar.multiselect(
+    "Selecione a Concessão:",
+    options=["Selecionar todos"] + concessions_list,
+    default=["Selecionar todos"]
+)
+
+show_areas_urbanas = st.sidebar.selectbox(
+    "Áreas Urbanas:",
+    options=["Mostrar", "Esconder"],
+    index=1
+)
+
 # Filtro por coordenadas
 st.sidebar.header("Filtrar por Coordenadas")
 lat_ini = st.sidebar.text_input("Latitude Inicial")
@@ -149,6 +171,20 @@ else:
     # Se não houver coordenadas, usar os dados completos
     hexagonos_filtrados = hexagonos_h3.copy()
     segmentos_filtrados = malha_viaria.copy()
+
+# Aplicar filtros adicionais
+if "Selecionar todos" not in selected_risks:
+    selected_risk_values = [int(r.split()[1]) for r in selected_risks]
+    hexagonos_filtrados = hexagonos_filtrados[
+        hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
+    ]
+
+if "Selecionar todos" not in selected_concessions:
+    segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
+    if not segmentos_filtrados.empty:
+        hexagonos_filtrados = hexagonos_filtrados[
+            hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
+        ]
 
 # Aba 1: Mapa Interativo
 with tabs[0]:
@@ -182,6 +218,13 @@ with tabs[0]:
             },
             tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
         ).add_to(m)
+
+        if show_areas_urbanas == "Mostrar":
+            folium.GeoJson(
+                areas_urbanas,
+                name="Áreas Urbanas",
+                style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
+            ).add_to(m)
 
         LayerControl().add_to(m)
         st_folium(m, width=800, height=600)
@@ -230,5 +273,6 @@ with tabs[1]:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
 
 
