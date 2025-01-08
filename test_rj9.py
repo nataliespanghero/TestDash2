@@ -30,7 +30,7 @@ st.markdown(
         color: #2F50C1 !important;
     }
 
-    /* Imagem na sidebar */
+    /* Imagem no topo da sidebar */
     .sidebar-logo {
         display: block;
         margin-left: auto;
@@ -56,16 +56,31 @@ st.markdown(
     .plotly .title {
         fill: #2F50C1 !important;
     }
+
+    /* Texto das opções dos selectboxes */
+    .stSelectbox div, .stMultiselect div, .stRadio div {
+        color: #2F50C1 !important; /* Azul */
+    }
+
+    /* Bordas dos selectboxes */
+    .stSelectbox, .stMultiselect, .stRadio {
+        border: 2px solid #2F50C1 !important; /* Borda azul */
+        border-radius: 5px !important;
+        padding: 5px !important;
+    }
+
+    /* Fundo das opções selecionadas */
+    .st-multi-select-box > div > div {
+        background-color: #2F50C1 !important;
+        color: white !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Adicionar a imagem no topo da sidebar
-st.sidebar.markdown(
-    '<img src="logo.png" alt="Logo" class="sidebar-logo">',
-    unsafe_allow_html=True
-)
+# Adicionar a imagem no topo da sidebar com Streamlit
+st.sidebar.image("logo.png", use_column_width=True)
 
 # Título principal
 st.title("Dashboard Interativo: Risco de Atropelamento")
@@ -79,12 +94,12 @@ areas_urbanas = gpd.read_file('AU.geojson')
 if 'risk_mean_KmP' not in hexagonos_h3.columns or 'risk_mean_KmP_dark' not in hexagonos_h3.columns:
     for index, row in hexagonos_h3.iterrows():
         segmentos_no_hex = malha_viaria[malha_viaria.intersects(row.geometry)]
-        
+
         if not segmentos_no_hex.empty:
             # Risco Diurno
             hexagonos_h3.loc[index, 'risk_mean_KmP'] = segmentos_no_hex['KmP'].mean()
             hexagonos_h3.loc[index, 'risk_mean_rounded_KmP'] = segmentos_no_hex['KmP'].mean().round()
-            
+
             # Risco Noturno
             hexagonos_h3.loc[index, 'risk_mean_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean()
             hexagonos_h3.loc[index, 'risk_mean_rounded_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean().round()
@@ -236,3 +251,4 @@ fig.update_layout(
 )
 
 st.sidebar.plotly_chart(fig, use_container_width=True)
+
