@@ -146,11 +146,11 @@ with tabs[0]:
     draw = Draw(export=True)
     draw.add_to(m)
 
-    # Aplicar filtros e ajustes
+    # Capturar desenho e processar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar desenho no mapa e aplicar como filtro
-    map_output = st_folium(m, width=800, height=600)
+    # Capturar o desenho no mapa
+    map_output = st_folium(m, width=800, height=600, key="mapa_inicial")
     desenho = map_output.get("last_active_drawing")
 
     if desenho:
@@ -185,7 +185,7 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
-    # Adicionar camadas no mapa
+    # Atualizar o mapa com filtros aplicados
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -220,8 +220,8 @@ with tabs[0]:
 
         LayerControl().add_to(m)
 
-    # Atualizar o mapa com filtros aplicados
-    st_folium(m, width=800, height=600, key="final_map")
+    # Renderizar mapa final com filtros aplicados
+    st_folium(m, width=800, height=600, key="mapa_filtrado")
 
 
 # Aba 2: Gráfico
