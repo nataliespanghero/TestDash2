@@ -146,13 +146,14 @@ with tabs[0]:
     draw = Draw(export=True)
     draw.add_to(m)
 
-    # Aplicar filtros e ajustes
+    # Aplicar filtros e capturar o desenho diretamente
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar desenho e processar filtros
-    map_output = st_folium(m, width=800, height=600, key="mapa_unico")
+    # Renderizar o mapa e capturar o desenho
+    map_output = st_folium(m, width=800, height=600)
     desenho = map_output.get("last_active_drawing")
 
+    # Filtrar os dados com base no desenho
     if desenho:
         try:
             geom = shape(desenho["geometry"])
@@ -220,9 +221,8 @@ with tabs[0]:
 
         LayerControl().add_to(m)
 
-    # Exibir o mapa único
-    st_folium(m, width=800, height=600, key="mapa_unificado")
-
+    # Renderizar o mapa final
+    st_folium(m, width=800, height=600, key="mapa_unico")
 
 # Aba 2: Gráfico
 with tabs[1]:
