@@ -146,11 +146,11 @@ with tabs[0]:
     draw = Draw(export=True)
     draw.add_to(m)
 
-    # Capturar desenho e processar filtros
+    # Aplicar filtros e ajustes
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar o desenho no mapa
-    map_output = st_folium(m, width=800, height=600, key="mapa_inicial")
+    # Capturar desenho e aplicar como filtro
+    map_output = st_folium(m, width=800, height=600, key="mapa_unico")
     desenho = map_output.get("last_active_drawing")
 
     if desenho:
@@ -220,8 +220,8 @@ with tabs[0]:
 
         LayerControl().add_to(m)
 
-    # Renderizar mapa final com filtros aplicados
-    st_folium(m, width=800, height=600, key="mapa_filtrado")
+    # Exibir mapa final (único)
+    st_folium(m, width=800, height=600)
 
 
 # Aba 2: Gráfico
