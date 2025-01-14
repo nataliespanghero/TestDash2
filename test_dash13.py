@@ -134,26 +134,24 @@ if coordenadas_input:
 # Aba 1: Mapa Interativo
 with tabs[0]:
     st.header("Mapa Interativo")
+
+    # Inicializar mapa
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)
     draw.add_to(m)
 
-    # Captura do desenho ou geometria inicial
-    map_output = st_folium(m, width=800, height=600)
-    desenho = map_output.get("last_active_drawing")
-
+    # Aplicar filtros e ajustes
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    if desenho:
+    if coordenadas_input:
         try:
-            geom = shape(desenho["geometry"])
-            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
-            usar_geometria_desenhada = True
-        except Exception:
-            st.error("Erro ao processar desenho.")
-
-    if usar_filtro_coordenadas:
-        hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
+            coords_parts = coordenadas_input.split('|')
+            lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
+            lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
+            bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
+        except ValueError:
+            st.sidebar.error("Erro: Formato inválido.")
 
     if "Selecionar todos" not in selected_risks:
         selected_risk_values = [int(r.split()[1]) for r in selected_risks]
@@ -202,8 +200,9 @@ with tabs[0]:
 
         LayerControl().add_to(m)
 
-    # Exibir apenas o mapa final, sem repetição
+    # Renderizar apenas o mapa filtrado
     st_folium(m, width=800, height=600)
+
 
 # Aba 2: Gráfico
 with tabs[1]:
