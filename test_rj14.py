@@ -149,6 +149,17 @@ with tabs[0]:
     # Aplicar filtros e ajustes
     hexagonos_filtrados = hexagonos_h3.copy()
 
+    # Filtrar por coordenadas
+    if usar_filtro_coordenadas:
+        if coordenadas_inicio:
+            lat_ini, lon_ini = map(float, coordenadas_inicio.strip().split(','))
+            bbox_inicio = box(lon_ini - 0.01, lat_ini - 0.01, lon_ini + 0.01, lat_ini + 0.01)
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_inicio)]
+        if coordenadas_fim:
+            lat_fim, lon_fim = map(float, coordenadas_fim.strip().split(','))
+            bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_fim)]
+
     # Capturar desenho do mapa
     map_output = st_folium(m, width=800, height=600)
     desenho = map_output.get("last_active_drawing")
@@ -160,13 +171,6 @@ with tabs[0]:
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
         except Exception:
             st.error("Erro ao processar o desenho no mapa.")
-
-    # Filtrar por coordenadas
-    if usar_filtro_coordenadas:
-        if coordenadas_inicio:
-            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_inicio)]
-        if coordenadas_fim:
-            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_fim)]
 
     # Aplicar outros filtros
     if "Selecionar todos" not in selected_risks:
@@ -182,7 +186,7 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
-    # Adicionar camadas no mapa
+    # Atualizar o mapa com os filtros aplicados
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -217,8 +221,8 @@ with tabs[0]:
 
         LayerControl().add_to(m)
 
-    # Exibir mapa atualizado
-    st_folium(m, width=800, height=600)
+    # Renderizar mapa atualizado
+    st_folium(m, width=800, height=600, key="updated_map")
 
 # Aba 2: Gráfico
 with tabs[1]:
