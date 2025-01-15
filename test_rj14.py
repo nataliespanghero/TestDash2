@@ -227,7 +227,6 @@ with tabs[0]:
     # Renderizar o mapa atualizado
     st_folium(mapa_base, width=800, height=600, key="mapa_filtrado")
 
-
 # Aba 2: Gráfico
 with tabs[1]:
     st.header("Gráfico de Riscos")
