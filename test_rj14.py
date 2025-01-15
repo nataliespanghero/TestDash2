@@ -128,11 +128,11 @@ if coordenadas_inicio or coordenadas_fim:
     try:
         if coordenadas_inicio:
             lat_ini, lon_ini = map(float, coordenadas_inicio.strip().split(','))
-            bbox_inicio = box(lon_ini - 0.01, lat_ini - 0.01, lon_ini + 0.01, lat_ini + 0.01)  # Pequena área ao redor
+            bbox_inicio = box(lon_ini - 0.01, lat_ini - 0.01, lon_ini + 0.01, lat_ini + 0.01)
             usar_filtro_coordenadas = True
         if coordenadas_fim:
             lat_fim, lon_fim = map(float, coordenadas_fim.strip().split(','))
-            bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)  # Pequena área ao redor
+            bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)
             usar_filtro_coordenadas = True
     except ValueError:
         st.sidebar.error("Erro: Formato inválido. Insira as coordenadas no formato correto (lat, lon).")
@@ -140,6 +140,129 @@ if coordenadas_inicio or coordenadas_fim:
 # Aba 1: Mapa Interativo
 with tabs[0]:
     st.header("Mapa Interativo")
+
+    # Inicializar o mapa base
+    mapa_base = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
+    draw = Draw(export=True)  # Ferramenta de desenho no mapa
+    draw.add_to(mapa_base)
+
+    # Variável para hexágonos filtrados
+    hexagonos_filtrados = hexagonos_h3.copy()
+
+    # Capturar o desenho do mapa
+    map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
+    desenho = map_output.get("last_active_drawing")
+
+    # Aplicar filtros com base no desenho, coordenadas, concessões e riscos
+    try:
+        # 1. Filtro por desenho
+        if desenho:
+            geom = shape(desenho["geometry"])
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
+
+        # 2. Filtro por coordenadas
+        if usar_filtro_coordenadas:
+            if coordenadas_inicio:
+                lat_ini, lon_ini = map(float, coordenadas_inicio.strip().split(','))
+                bbox_inicio = box(lon_ini - 0.01, lat_ini - 0.01, lon_ini + 0.01, lat_ini + 0.01)
+                hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_inicio)]
+
+            if coordenadas_fim:
+                lat_fim, lon_fim = map(float, coordenadas_fim.strip().split(','))
+                bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)
+                hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_fim)]
+
+        # 3. Filtro por riscos
+        if "Selecionar todos" not in selected_risks:
+            selected_risk_values = [int(r.split()[1]) for r in selected_risks]
+            hexagonos_filtrados = hexagonos_filtrados[
+                hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
+            ]
+
+        # 4. Filtro por concessões
+        if "Selecionar todos" not in selected_concessions:
+            segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
+            if not segmentos_filtrados.empty:
+                hexagonos_filtrados = hexagonos_filtrados[
+                    hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
+                ]
+    except Exception as e:
+        st.error(f"Erro ao aplicar filtros: {e}")
+
+    # Renderizar mapa com hexágonos filtrados
+    if not hexagonos_filtrados.empty:
+        Choropleth(
+            geo_data=hexagonos_filtrados,
+            data=hexagonos_filtrados,
+            columns=["index", coluna_risco_rounded],
+            key_on="feature.properties.index",
+            fill_color="RdYlGn_r",
+            fill_opacity=0.6,
+            line_opacity=0.2,
+            legend_name=f"Risco Médio ({tipo_risco})",
+            name="Hexágonos Selecionados",
+            highlight=True,
+        ).add_to(mapa_base)
+
+        folium.GeoJson(
+            hexagonos_filtrados,
+            name="Hexágonos",
+            style_function=lambda x: {
+                'color': 'lightgray',
+                'weight': 0.3,
+                'fillOpacity': 0
+            },
+            tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
+        ).add_to(mapa_base)
+
+        if show_areas_urbanas == "Mostrar":
+            folium.GeoJson(
+                areas_urbanas,
+                name="Áreas Urbanas",
+                style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
+            ).add_to(mapa_base)
+
+        LayerControl().add_to(mapa_base)
+
+    # Renderizar o mapa final (apenas uma vez, com todas as alterações aplicadas)
+    st_folium(mapa_base, width=800, height=600, key="mapa_final")
+
+# Aba 2: Gráfico
+with tabs[1]:
+    st.header("Gráfico de Riscos")
+    risco_percentual_filtrado = (
+        hexagonos_filtrados[coluna_risco_rounded]
+        .value_counts(normalize=True)
+        .reindex(range(7), fill_value=0)
+        .reset_index()
+    )
+    risco_percentual_filtrado.columns = ["Categoria de Risco", "%"]
+    risco_percentual_filtrado["%"] *= 100
+
+    fig = go.Figure()
+    cores = ["#008000", "#7FFF00", "#FFFF00", "#FFBF00", "#FF8000", "#FF4000", "#FF0000"]
+
+    for i, cor in enumerate(cores):
+        fig.add_trace(go.Bar(
+            x=[risco_percentual_filtrado.loc[i, 'Categoria de Risco']],
+            y=[risco_percentual_filtrado.loc[i, '%']],
+            name=f"Risco {i}",
+            marker_color=cor
+        ))
+
+    fig.update_layout(
+        title=dict(text=f"Distribuição de Risco ({tipo_risco})", font=dict(color="#2F50C1")),
+        xaxis_title="Categoria de Risco",
+        yaxis_title="% em Hexágonos",
+        xaxis=dict(title=dict(font=dict(color='#2F50C1')), tickfont=dict(color='#2F50C1')),
+        yaxis=dict(title=dict(font=dict(color='#2F50C1')), tickfont=dict(color='#2F50C1')),
+        autosize=True,
+        barmode="group",
+        legend=dict(title=dict(font=dict(color='#2F50C1')), font=dict(color='#2F50C1'))
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
 
     # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
