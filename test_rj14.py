@@ -141,19 +141,19 @@ if coordenadas_inicio or coordenadas_fim:
 with tabs[0]:
     st.header("Mapa Interativo")
 
-    # Inicializar mapa
-    m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
+    # Inicializar o mapa sem renderizá-lo ainda
+    mapa_base = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)
-    draw.add_to(m)
+    draw.add_to(mapa_base)
 
     # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
 
     # Capturar o desenho do mapa
-    map_output = st_folium(m, width=800, height=600, key="mapa_interativo")
+    map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
-    # Aplicar filtro pelo desenho
+    # Aplicar filtro pelo desenho (se existir)
     if desenho:
         try:
             geom = shape(desenho["geometry"])
@@ -161,7 +161,7 @@ with tabs[0]:
         except Exception:
             st.error("Erro ao processar o desenho no mapa.")
 
-    # Aplicar filtros por coordenadas
+    # Aplicar filtros por coordenadas (se especificadas)
     if usar_filtro_coordenadas:
         try:
             if coordenadas_inicio:
@@ -203,7 +203,7 @@ with tabs[0]:
             legend_name=f"Risco Médio ({tipo_risco})",
             name="Hexágonos Selecionados",
             highlight=True,
-        ).add_to(m)
+        ).add_to(mapa_base)
 
         folium.GeoJson(
             hexagonos_filtrados,
@@ -214,19 +214,19 @@ with tabs[0]:
                 'fillOpacity': 0
             },
             tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
-        ).add_to(m)
+        ).add_to(mapa_base)
 
         if show_areas_urbanas == "Mostrar":
             folium.GeoJson(
                 areas_urbanas,
                 name="Áreas Urbanas",
                 style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
-            ).add_to(m)
+            ).add_to(mapa_base)
 
-        LayerControl().add_to(m)
+        LayerControl().add_to(mapa_base)
 
-    # Renderizar mapa final
-    st_folium(m, width=800, height=600, key="mapa_final")
+    # Renderizar o mapa final
+    st_folium(mapa_base, width=800, height=600, key="mapa_filtrado")
 
 # Aba 2: Gráfico
 with tabs[1]:
