@@ -149,20 +149,16 @@ with tabs[0]:
     # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar o desenho e aplicar os filtros
-    map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
-    desenho = map_output.get("last_active_drawing")
+    # Capturar o desenho do mapa e aplicar os filtros
+    try:
+        map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
+        desenho = map_output.get("last_active_drawing")
 
-    if desenho:
-        try:
+        if desenho:
             geom = shape(desenho["geometry"])
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
             st.info("Filtro aplicado com base no desenho.")
-        except Exception as e:
-            st.error(f"Erro ao processar o desenho: {e}")
 
-    # Aplicar filtros adicionais
-    try:
         # Filtro por coordenadas
         if usar_filtro_coordenadas:
             if coordenadas_inicio:
@@ -189,46 +185,47 @@ with tabs[0]:
                 hexagonos_filtrados = hexagonos_filtrados[
                     hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
                 ]
-    except Exception as e:
-        st.error(f"Erro ao aplicar filtros adicionais: {e}")
 
-    # Atualizar o mapa com hexágonos filtrados
-    if not hexagonos_filtrados.empty:
-        Choropleth(
-            geo_data=hexagonos_filtrados,
-            data=hexagonos_filtrados,
-            columns=["index", coluna_risco_rounded],
-            key_on="feature.properties.index",
-            fill_color="RdYlGn_r",
-            fill_opacity=0.6,
-            line_opacity=0.2,
-            legend_name=f"Risco Médio ({tipo_risco})",
-            name="Hexágonos Selecionados",
-            highlight=True,
-        ).add_to(mapa_base)
-
-        folium.GeoJson(
-            hexagonos_filtrados,
-            name="Hexágonos",
-            style_function=lambda x: {
-                'color': 'lightgray',
-                'weight': 0.3,
-                'fillOpacity': 0
-            },
-            tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
-        ).add_to(mapa_base)
-
-        if show_areas_urbanas == "Mostrar":
-            folium.GeoJson(
-                areas_urbanas,
-                name="Áreas Urbanas",
-                style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
+        # Renderizar mapa atualizado com hexágonos filtrados
+        if not hexagonos_filtrados.empty:
+            Choropleth(
+                geo_data=hexagonos_filtrados,
+                data=hexagonos_filtrados,
+                columns=["index", coluna_risco_rounded],
+                key_on="feature.properties.index",
+                fill_color="RdYlGn_r",
+                fill_opacity=0.6,
+                line_opacity=0.2,
+                legend_name=f"Risco Médio ({tipo_risco})",
+                name="Hexágonos Selecionados",
+                highlight=True,
             ).add_to(mapa_base)
 
-        LayerControl().add_to(mapa_base)
+            folium.GeoJson(
+                hexagonos_filtrados,
+                name="Hexágonos",
+                style_function=lambda x: {
+                    'color': 'lightgray',
+                    'weight': 0.3,
+                    'fillOpacity': 0
+                },
+                tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
+            ).add_to(mapa_base)
 
-    # Renderizar o mapa final
-    st_folium(mapa_base, width=800, height=600, key="mapa_final")
+            if show_areas_urbanas == "Mostrar":
+                folium.GeoJson(
+                    areas_urbanas,
+                    name="Áreas Urbanas",
+                    style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
+                ).add_to(mapa_base)
+
+            LayerControl().add_to(mapa_base)
+
+        # Renderizar o mapa atualizado
+        st_folium(mapa_base, width=800, height=600, key="mapa_final")
+
+    except Exception as e:
+        st.error(f"Erro ao processar o mapa: {e}")
 
 # Aba 2: Gráfico
 with tabs[1]:
