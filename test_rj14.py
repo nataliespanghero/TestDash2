@@ -141,19 +141,21 @@ if coordenadas_inicio or coordenadas_fim:
 with tabs[0]:
     st.header("Mapa Interativo")
 
+    # Variável para hexágonos filtrados
+    hexagonos_filtrados = hexagonos_h3.copy()
+
     # Inicializar o mapa base
     mapa_base = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)  # Ferramenta de desenho no mapa
     draw.add_to(mapa_base)
 
-    # Variável para hexágonos filtrados
-    hexagonos_filtrados = hexagonos_h3.copy()
-
-    # Capturar o desenho do mapa e aplicar os filtros
+    # Capturar o desenho do mapa e aplicar filtros
     try:
+        # Renderizar o mapa base apenas para capturar o desenho
         map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
         desenho = map_output.get("last_active_drawing")
 
+        # Aplicar filtro pelo desenho
         if desenho:
             geom = shape(desenho["geometry"])
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
@@ -186,7 +188,7 @@ with tabs[0]:
                     hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
                 ]
 
-        # Renderizar mapa atualizado com hexágonos filtrados
+        # Atualizar o mapa com hexágonos filtrados
         if not hexagonos_filtrados.empty:
             Choropleth(
                 geo_data=hexagonos_filtrados,
@@ -221,8 +223,8 @@ with tabs[0]:
 
             LayerControl().add_to(mapa_base)
 
-        # Renderizar o mapa atualizado
-        st_folium(mapa_base, width=800, height=600, key="mapa_final")
+        # Renderizar o mapa final com os filtros aplicados
+        st_folium(mapa_base, width=800, height=600, key="mapa_filtrado")
 
     except Exception as e:
         st.error(f"Erro ao processar o mapa: {e}")
