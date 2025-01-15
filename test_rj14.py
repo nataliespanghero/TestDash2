@@ -153,14 +153,14 @@ with tabs[0]:
     map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
-    # Aplicar filtros com base no desenho, coordenadas, concessões e riscos
+    # Aplicar filtros
     try:
-        # 1. Filtro por desenho
+        # Filtro pelo desenho
         if desenho:
             geom = shape(desenho["geometry"])
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
 
-        # 2. Filtro por coordenadas
+        # Filtro por coordenadas
         if usar_filtro_coordenadas:
             if coordenadas_inicio:
                 lat_ini, lon_ini = map(float, coordenadas_inicio.strip().split(','))
@@ -172,14 +172,14 @@ with tabs[0]:
                 bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)
                 hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_fim)]
 
-        # 3. Filtro por riscos
+        # Filtro por riscos
         if "Selecionar todos" not in selected_risks:
             selected_risk_values = [int(r.split()[1]) for r in selected_risks]
             hexagonos_filtrados = hexagonos_filtrados[
                 hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
             ]
 
-        # 4. Filtro por concessões
+        # Filtro por concessões
         if "Selecionar todos" not in selected_concessions:
             segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
             if not segmentos_filtrados.empty:
@@ -224,8 +224,9 @@ with tabs[0]:
 
         LayerControl().add_to(mapa_base)
 
-    # Renderizar o mapa final (com as atualizações do filtro)
-    st_folium(mapa_base, width=800, height=600, key="mapa_filtrado_final")
+    # Renderizar o mapa atualizado
+    st_folium(mapa_base, width=800, height=600, key="mapa_filtrado")
+
 
 # Aba 2: Gráfico
 with tabs[1]:
