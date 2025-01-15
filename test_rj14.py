@@ -141,7 +141,7 @@ if coordenadas_inicio or coordenadas_fim:
 with tabs[0]:
     st.header("Mapa Interativo")
 
-    # Inicializar o mapa
+    # Inicializar mapa
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)
     draw.add_to(m)
@@ -149,11 +149,11 @@ with tabs[0]:
     # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar desenho do mapa
+    # Capturar o desenho do mapa
     map_output = st_folium(m, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
-    # Aplicar filtro baseado no desenho
+    # Aplicar filtro pelo desenho
     if desenho:
         try:
             geom = shape(desenho["geometry"])
@@ -190,7 +190,7 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
-    # Renderizar o mapa apenas se houver hexágonos filtrados
+    # Renderizar mapa final com hexágonos filtrados
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -225,8 +225,8 @@ with tabs[0]:
 
         LayerControl().add_to(m)
 
-    # Renderizar mapa final com filtros aplicados
-    st_folium(m, width=800, height=600, key="mapa_final")
+    # Renderizar mapa final
+    st_folium(m, width=800, height=600, key="mapa_filtrado")
 
 # Aba 2: Gráfico
 with tabs[1]:
