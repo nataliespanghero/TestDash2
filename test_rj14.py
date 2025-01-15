@@ -149,7 +149,7 @@ with tabs[0]:
     # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar o desenho do mapa
+    # Capturar o desenho do mapa (se houver)
     map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
@@ -225,8 +225,7 @@ with tabs[0]:
         LayerControl().add_to(mapa_base)
 
     # Renderizar o mapa atualizado
-    st_folium(mapa_base, width=800, height=600, key="mapa_filtrado")
-
+    st_folium(mapa_base, width=800, height=600, key="mapa_final")
 
 # Aba 2: Gráfico
 with tabs[1]:
