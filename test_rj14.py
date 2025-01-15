@@ -149,10 +149,11 @@ with tabs[0]:
     # Copiar hexágonos para aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar o desenho no mapa e aplicar o filtro
+    # Capturar o desenho no mapa
     map_output = st_folium(m, width=800, height=600, key="mapa_desenho")
     desenho = map_output.get("last_active_drawing")
 
+    # Aplicar filtros com base no desenho
     if desenho:
         try:
             geom = shape(desenho["geometry"])
@@ -221,7 +222,7 @@ with tabs[0]:
         LayerControl().add_to(m)
 
     # Renderizar o mapa final com todos os filtros aplicados
-    st_folium(m, width=800, height=600, key="mapa_filtrado")
+    st_folium(m, width=800, height=600, key="mapa_final")
 
 # Aba 2: Gráfico
 with tabs[1]:
