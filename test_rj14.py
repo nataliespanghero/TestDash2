@@ -141,19 +141,18 @@ if coordenadas_inicio or coordenadas_fim:
 with tabs[0]:
     st.header("Mapa Interativo")
 
-    # Inicializar mapa
+    # Inicializar o mapa (SEM renderizar ainda)
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)
     draw.add_to(m)
 
-    # Copiar hexágonos para aplicar filtros
+    # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar o desenho no mapa
-    map_output = st_folium(m, width=800, height=600, key="mapa_desenho")
+    # Capturar desenho e processar
+    map_output = st_folium(m, width=800, height=600, key="mapa_unico")
     desenho = map_output.get("last_active_drawing")
 
-    # Aplicar filtros com base no desenho
     if desenho:
         try:
             geom = shape(desenho["geometry"])
@@ -164,15 +163,21 @@ with tabs[0]:
     # Aplicar filtros por coordenadas
     if usar_filtro_coordenadas:
         if coordenadas_inicio:
-            lat_ini, lon_ini = map(float, coordenadas_inicio.strip().split(','))
-            bbox_inicio = box(lon_ini - 0.01, lat_ini - 0.01, lon_ini + 0.01, lat_ini + 0.01)
-            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_inicio)]
+            try:
+                lat_ini, lon_ini = map(float, coordenadas_inicio.strip().split(','))
+                bbox_inicio = box(lon_ini - 0.01, lat_ini - 0.01, lon_ini + 0.01, lat_ini + 0.01)
+                hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_inicio)]
+            except ValueError:
+                st.error("Erro: Formato inválido para ponto inicial.")
         if coordenadas_fim:
-            lat_fim, lon_fim = map(float, coordenadas_fim.strip().split(','))
-            bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)
-            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_fim)]
+            try:
+                lat_fim, lon_fim = map(float, coordenadas_fim.strip().split(','))
+                bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)
+                hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_fim)]
+            except ValueError:
+                st.error("Erro: Formato inválido para ponto final.")
 
-    # Aplicar outros filtros
+    # Aplicar filtros adicionais
     if "Selecionar todos" not in selected_risks:
         selected_risk_values = [int(r.split()[1]) for r in selected_risks]
         hexagonos_filtrados = hexagonos_filtrados[
@@ -186,7 +191,7 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
-    # Adicionar camadas no mapa filtrado
+    # Atualizar mapa com hexágonos filtrados
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -221,7 +226,7 @@ with tabs[0]:
 
         LayerControl().add_to(m)
 
-    # Renderizar o mapa final com todos os filtros aplicados
+    # Renderizar o mapa final (apenas uma vez)
     st_folium(m, width=800, height=600, key="mapa_final")
 
 # Aba 2: Gráfico
