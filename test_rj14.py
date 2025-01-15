@@ -141,29 +141,27 @@ if coordenadas_inicio or coordenadas_fim:
 with tabs[0]:
     st.header("Mapa Interativo")
 
-    # Inicializar o mapa sem renderizá-lo ainda
+    # Inicializar o mapa base
     mapa_base = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
-    draw = Draw(export=True)
+    draw = Draw(export=True)  # Ferramenta de desenho no mapa
     draw.add_to(mapa_base)
 
     # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar o desenho do mapa
+    # Capturar o desenho do mapa (apenas no momento certo)
     map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
-    # Aplicar filtro pelo desenho (se existir)
-    if desenho:
-        try:
+    # Aplicar filtros com base no desenho, coordenadas, concessões e riscos
+    try:
+        # 1. Filtro por desenho
+        if desenho:
             geom = shape(desenho["geometry"])
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
-        except Exception:
-            st.error("Erro ao processar o desenho no mapa.")
 
-    # Aplicar filtros por coordenadas (se especificadas)
-    if usar_filtro_coordenadas:
-        try:
+        # 2. Filtro por coordenadas
+        if usar_filtro_coordenadas:
             if coordenadas_inicio:
                 lat_ini, lon_ini = map(float, coordenadas_inicio.strip().split(','))
                 bbox_inicio = box(lon_ini - 0.01, lat_ini - 0.01, lon_ini + 0.01, lat_ini + 0.01)
@@ -173,24 +171,25 @@ with tabs[0]:
                 lat_fim, lon_fim = map(float, coordenadas_fim.strip().split(','))
                 bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)
                 hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_fim)]
-        except ValueError:
-            st.sidebar.error("Erro: Coordenadas inválidas.")
 
-    # Aplicar filtros adicionais (riscos e concessões)
-    if "Selecionar todos" not in selected_risks:
-        selected_risk_values = [int(r.split()[1]) for r in selected_risks]
-        hexagonos_filtrados = hexagonos_filtrados[
-            hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
-        ]
-
-    if "Selecionar todos" not in selected_concessions:
-        segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
-        if not segmentos_filtrados.empty:
+        # 3. Filtro por riscos
+        if "Selecionar todos" not in selected_risks:
+            selected_risk_values = [int(r.split()[1]) for r in selected_risks]
             hexagonos_filtrados = hexagonos_filtrados[
-                hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
+                hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
             ]
 
-    # Renderizar mapa final com hexágonos filtrados
+        # 4. Filtro por concessões
+        if "Selecionar todos" not in selected_concessions:
+            segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
+            if not segmentos_filtrados.empty:
+                hexagonos_filtrados = hexagonos_filtrados[
+                    hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
+                ]
+    except Exception as e:
+        st.error(f"Erro ao aplicar filtros: {e}")
+
+    # Renderizar mapa com hexágonos filtrados
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -225,8 +224,8 @@ with tabs[0]:
 
         LayerControl().add_to(mapa_base)
 
-    # Renderizar o mapa final
-    st_folium(mapa_base, width=800, height=600, key="mapa_filtrado")
+    # Renderizar o mapa final (apenas uma vez, com todas as alterações aplicadas)
+    st_folium(mapa_base, width=800, height=600, key="mapa_final")
 
 # Aba 2: Gráfico
 with tabs[1]:
