@@ -141,7 +141,7 @@ if coordenadas_inicio or coordenadas_fim:
 with tabs[0]:
     st.header("Mapa Interativo")
 
-    # Inicializar o mapa base
+    # Inicializar mapa base
     mapa_base = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)  # Ferramenta de desenho no mapa
     draw.add_to(mapa_base)
@@ -149,11 +149,11 @@ with tabs[0]:
     # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar o desenho do mapa (se houver)
+    # Capturar o desenho do mapa interativo
     map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
-    # Aplicar filtros
+    # Aplicar filtros (desenho, coordenadas, concessões, riscos)
     try:
         # 1. Filtro pelo desenho
         if desenho:
@@ -224,7 +224,7 @@ with tabs[0]:
 
         LayerControl().add_to(mapa_base)
 
-    # Renderizar o mapa atualizado
+    # Renderizar o mapa final com todos os filtros aplicados
     st_folium(mapa_base, width=800, height=600, key="mapa_final")
 
 # Aba 2: Gráfico
