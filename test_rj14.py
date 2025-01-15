@@ -149,18 +149,22 @@ with tabs[0]:
     # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar o desenho do mapa interativo
+    # Capturar o desenho no mapa
     map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
-    # Aplicar filtros (desenho, coordenadas, concessões, riscos)
-    try:
-        # 1. Filtro pelo desenho
-        if desenho:
+    # Verificar se há desenho capturado
+    if desenho:
+        st.info("Desenho capturado com sucesso.")
+        try:
             geom = shape(desenho["geometry"])
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
+        except Exception as e:
+            st.error(f"Erro ao processar o desenho: {e}")
 
-        # 2. Filtro por coordenadas
+    # Aplicar outros filtros
+    try:
+        # Filtro por coordenadas
         if usar_filtro_coordenadas:
             if coordenadas_inicio:
                 lat_ini, lon_ini = map(float, coordenadas_inicio.strip().split(','))
@@ -172,14 +176,14 @@ with tabs[0]:
                 bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)
                 hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_fim)]
 
-        # 3. Filtro por riscos
+        # Filtro por riscos
         if "Selecionar todos" not in selected_risks:
             selected_risk_values = [int(r.split()[1]) for r in selected_risks]
             hexagonos_filtrados = hexagonos_filtrados[
                 hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
             ]
 
-        # 4. Filtro por concessões
+        # Filtro por concessões
         if "Selecionar todos" not in selected_concessions:
             segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
             if not segmentos_filtrados.empty:
@@ -187,7 +191,7 @@ with tabs[0]:
                     hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
                 ]
     except Exception as e:
-        st.error(f"Erro ao aplicar filtros: {e}")
+        st.error(f"Erro ao aplicar filtros adicionais: {e}")
 
     # Atualizar o mapa com hexágonos filtrados
     if not hexagonos_filtrados.empty:
@@ -224,7 +228,7 @@ with tabs[0]:
 
         LayerControl().add_to(mapa_base)
 
-    # Renderizar o mapa final com todos os filtros aplicados
+    # Renderizar o mapa final com todas as alterações aplicadas
     st_folium(mapa_base, width=800, height=600, key="mapa_final")
 
 # Aba 2: Gráfico
