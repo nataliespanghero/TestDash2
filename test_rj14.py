@@ -149,7 +149,7 @@ with tabs[0]:
     # Variável para hexágonos filtrados
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar o desenho do mapa (apenas no momento certo)
+    # Capturar o desenho do mapa
     map_output = st_folium(mapa_base, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
