@@ -155,12 +155,12 @@ with tabs[0]:
 
     # Aplicar filtros
     try:
-        # Filtro pelo desenho
+        # 1. Filtro pelo desenho
         if desenho:
             geom = shape(desenho["geometry"])
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
 
-        # Filtro por coordenadas
+        # 2. Filtro por coordenadas
         if usar_filtro_coordenadas:
             if coordenadas_inicio:
                 lat_ini, lon_ini = map(float, coordenadas_inicio.strip().split(','))
@@ -172,14 +172,14 @@ with tabs[0]:
                 bbox_fim = box(lon_fim - 0.01, lat_fim - 0.01, lon_fim + 0.01, lat_fim + 0.01)
                 hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox_fim)]
 
-        # Filtro por riscos
+        # 3. Filtro por riscos
         if "Selecionar todos" not in selected_risks:
             selected_risk_values = [int(r.split()[1]) for r in selected_risks]
             hexagonos_filtrados = hexagonos_filtrados[
                 hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
             ]
 
-        # Filtro por concessões
+        # 4. Filtro por concessões
         if "Selecionar todos" not in selected_concessions:
             segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
             if not segmentos_filtrados.empty:
@@ -189,7 +189,7 @@ with tabs[0]:
     except Exception as e:
         st.error(f"Erro ao aplicar filtros: {e}")
 
-    # Renderizar mapa com hexágonos filtrados
+    # Atualizar o mapa com hexágonos filtrados
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -226,6 +226,7 @@ with tabs[0]:
 
     # Renderizar o mapa atualizado
     st_folium(mapa_base, width=800, height=600, key="mapa_filtrado")
+
 
 # Aba 2: Gráfico
 with tabs[1]:
