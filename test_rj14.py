@@ -4,7 +4,7 @@ import geopandas as gpd
 import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
 from folium.plugins import Draw
-from shapely.geometry import box, shape
+from shapely.geometry import shape, box
 from streamlit_folium import st_folium
 import plotly.graph_objects as go
 
@@ -117,7 +117,7 @@ coordenadas_input = st.sidebar.text_input(
     placeholder="-22.817762, -43.372672 | -22.664081, -43.222538"
 )
 
-# Processar coordenadas ou desenho
+# Processar coordenadas
 usar_filtro_coordenadas = False
 if coordenadas_input:
     try:
@@ -142,25 +142,18 @@ with tabs[0]:
     map_output = st_folium(m, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
-    # Aplicar filtros e ajustes
+    # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
     if desenho:
         try:
             geom = shape(desenho["geometry"])
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
-        except Exception:
-            st.error("Erro ao processar o desenho no mapa.")
+        except Exception as e:
+            st.error(f"Erro ao processar o desenho no mapa: {e}")
 
-    if coordenadas_input:
-        try:
-            coords_parts = coordenadas_input.split('|')
-            lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
-            lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
-            bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
-            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
-        except ValueError:
-            st.sidebar.error("Erro: Formato inválido.")
+    if coordenadas_input and usar_filtro_coordenadas:
+        hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
 
     if "Selecionar todos" not in selected_risks:
         selected_risk_values = [int(r.split()[1]) for r in selected_risks]
@@ -209,9 +202,8 @@ with tabs[0]:
 
         LayerControl().add_to(m)
 
-    # Renderizar apenas o mapa filtrado
+    # Renderizar o mapa final
     st_folium(m, width=800, height=600)
-
 
 # Aba 2: Gráfico
 with tabs[1]:
@@ -248,3 +240,4 @@ with tabs[1]:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
