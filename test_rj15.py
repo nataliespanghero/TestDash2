@@ -130,68 +130,69 @@ if pair_1:
         st.sidebar.error("Erro: Insira coordenadas válidas.")
 
 # Aba 1: Mapa Interativo
-st.header("Mapa Interativo")
+with tabs[0]:
+    st.header("Mapa Interativo")
 
-# Inicializar mapa
-m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
-draw = Draw(export=True)
-draw.add_to(m)
+    # Inicializar mapa
+    m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
+    draw = Draw(export=True)
+    draw.add_to(m)
 
-# Aplicar filtros
-hexagonos_filtrados = hexagonos_h3.copy()
+    # Aplicar filtros
+    hexagonos_filtrados = hexagonos_h3.copy()
 
-if usar_filtro_coordenadas:
-    hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
+    if usar_filtro_coordenadas:
+        hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
 
-if "Selecionar todos" not in selected_risks:
-    selected_risk_values = [int(r.split()[1]) for r in selected_risks]
-    hexagonos_filtrados = hexagonos_filtrados[
-        hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
-    ]
-
-if "Selecionar todos" not in selected_concessions:
-    segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
-    if not segmentos_filtrados.empty:
+    if "Selecionar todos" not in selected_risks:
+        selected_risk_values = [int(r.split()[1]) for r in selected_risks]
         hexagonos_filtrados = hexagonos_filtrados[
-            hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
+            hexagonos_filtrados[coluna_risco_rounded].isin(selected_risk_values)
         ]
 
-if not hexagonos_filtrados.empty:
-    Choropleth(
-        geo_data=hexagonos_filtrados,
-        data=hexagonos_filtrados,
-        columns=["index", coluna_risco_rounded],
-        key_on="feature.properties.index",
-        fill_color="RdYlGn_r",
-        fill_opacity=0.6,
-        line_opacity=0.2,
-        legend_name=f"Risco Médio ({tipo_risco})",
-        name="Hexágonos Selecionados",
-        highlight=True,
-    ).add_to(m)
+    if "Selecionar todos" not in selected_concessions:
+        segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
+        if not segmentos_filtrados.empty:
+            hexagonos_filtrados = hexagonos_filtrados[
+                hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
+            ]
 
-    folium.GeoJson(
-        hexagonos_filtrados,
-        name="Hexágonos",
-        style_function=lambda x: {
-            'color': 'lightgray',
-            'weight': 0.3,
-            'fillOpacity': 0
-        },
-        tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
-    ).add_to(m)
-
-    if show_areas_urbanas == "Mostrar":
-        folium.GeoJson(
-            areas_urbanas,
-            name="Áreas Urbanas",
-            style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
+    if not hexagonos_filtrados.empty:
+        Choropleth(
+            geo_data=hexagonos_filtrados,
+            data=hexagonos_filtrados,
+            columns=["index", coluna_risco_rounded],
+            key_on="feature.properties.index",
+            fill_color="RdYlGn_r",
+            fill_opacity=0.6,
+            line_opacity=0.2,
+            legend_name=f"Risco Médio ({tipo_risco})",
+            name="Hexágonos Selecionados",
+            highlight=True,
         ).add_to(m)
 
-    LayerControl().add_to(m)
+        folium.GeoJson(
+            hexagonos_filtrados,
+            name="Hexágonos",
+            style_function=lambda x: {
+                'color': 'lightgray',
+                'weight': 0.3,
+                'fillOpacity': 0
+            },
+            tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
+        ).add_to(m)
 
-# Renderizar o mapa final
-st_folium(m, width=800, height=600)
+        if show_areas_urbanas == "Mostrar":
+            folium.GeoJson(
+                areas_urbanas,
+                name="Áreas Urbanas",
+                style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
+            ).add_to(m)
+
+        LayerControl().add_to(m)
+
+    # Renderizar o mapa final
+    st_folium(m, width=800, height=600)
 
 # Aba 2: Gráfico
 with tabs[1]:
