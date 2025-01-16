@@ -4,7 +4,7 @@ import geopandas as gpd
 import folium
 from folium import Choropleth, LayerControl, GeoJsonTooltip
 from folium.plugins import Draw
-from shapely.geometry import box, shape
+from shapely.geometry import shape
 from streamlit_folium import st_folium
 import plotly.graph_objects as go
 
@@ -34,21 +34,6 @@ st.markdown(
         font-size: 24px;
         font-weight: bold;
     }
-    .plotly .title {
-        fill: #2F50C1 !important;
-    }
-    .stSelectbox div, .stMultiselect div, .stRadio div {
-        color: #2F50C1 !important;
-    }
-    div[data-baseweb="select"], div[data-baseweb="input"] {
-        border: 2px solid #2F50C1 !important;
-        border-radius: 5px !important;
-        padding: 5px !important;
-    }
-    .st-multi-select-box > div > div {
-        background-color: #2F50C1 !important;
-        color: white !important;
-    }
     </style>
     """,
     unsafe_allow_html=True
@@ -59,9 +44,6 @@ st.sidebar.image("logo.png", width=130)
 
 # Título principal
 st.title("Dashboard Interativo: Risco de Atropelamento")
-
-# Criação das abas
-tabs = st.tabs(["Mapa Interativo", "Gráfico de Riscos"])
 
 # Carregar dados
 malha_viaria = gpd.read_file('Risco3.geojson')
@@ -91,69 +73,47 @@ hexagonos_h3 = gpd.read_file('hexagonos_h3_com_risco.geojson')
 # Escolha do tipo de risco pelo usuário
 st.sidebar.header("Configurações de Risco")
 tipo_risco = st.sidebar.selectbox("Selecione o tipo de risco:", ["Diurno", "Noturno"], index=0)
-coluna_risco = "KmP" if tipo_risco == "Diurno" else "KmP_dark"
-coluna_risco_rounded = f"risk_mean_rounded_{coluna_risco}"
+coluna_risco_rounded = "risk_mean_rounded_KmP" if tipo_risco == "Diurno" else "risk_mean_rounded_KmP_dark"
 
 # Filtros
 st.sidebar.header("Filtros")
-risks_list = list(range(7))
 selected_risks = st.sidebar.multiselect(
     "Selecione os Riscos:",
-    ["Selecionar todos"] + [f"Risco {r}" for r in risks_list],
+    ["Selecionar todos"] + [f"Risco {i}" for i in range(7)],
     default=["Selecionar todos"]
 )
-concessions_list = malha_viaria['empresa'].unique().tolist()
 selected_concessions = st.sidebar.multiselect(
     "Selecione a Concessão:",
-    ["Selecionar todos"] + concessions_list,
+    ["Selecionar todos"] + list(malha_viaria['empresa'].unique()),
     default=["Selecionar todos"]
 )
 show_areas_urbanas = st.sidebar.selectbox("Áreas Urbanas:", ["Mostrar", "Esconder"], index=1)
 
-# Filtro por coordenadas
-st.sidebar.header("Filtrar por Coordenadas")
-coordenadas_input = st.sidebar.text_input(
-    "Insira as coordenadas (formato: lat_ini, lon_ini | lat_fim, lon_fim):",
-    placeholder="-22.817762, -43.372672 | -22.664081, -43.222538"
-)
-
-# Processar coordenadas ou desenho
-usar_geometria_desenhada = False
-usar_filtro_coordenadas = False
-
-if coordenadas_input:
-    try:
-        coords_parts = coordenadas_input.split('|')
-        lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
-        lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
-        bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
-        usar_filtro_coordenadas = True
-    except ValueError:
-        st.sidebar.error("Erro: Formato inválido.")
-
 # Aba 1: Mapa Interativo
 with tabs[0]:
     st.header("Mapa Interativo")
+
+    # Inicializar o mapa
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)
     draw.add_to(m)
 
-    map_output = st_folium(m, width=800, height=600)
-    desenho = map_output.get("last_active_drawing")
-
+    # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
+    # Capturar desenho
+    map_output = st_folium(m, width=800, height=600, key="mapa_interativo")
+    desenho = map_output.get("last_active_drawing")
+
+    # Aplicar filtro por desenho
     if desenho:
         try:
             geom = shape(desenho["geometry"])
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geom)]
-            usar_geometria_desenhada = True
-        except Exception:
-            st.error("Erro ao processar desenho.")
+        except Exception as e:
+            st.error(f"Erro ao processar o desenho: {e}")
 
-    if usar_filtro_coordenadas:
-        hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
-
+    # Aplicar filtros adicionais
     if "Selecionar todos" not in selected_risks:
         selected_risk_values = [int(r.split()[1]) for r in selected_risks]
         hexagonos_filtrados = hexagonos_filtrados[
@@ -161,12 +121,13 @@ with tabs[0]:
         ]
 
     if "Selecionar todos" not in selected_concessions:
-        segmentos_filtrados = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
-        if not segmentos_filtrados.empty:
+        concessoes_filtradas = malha_viaria[malha_viaria['empresa'].isin(selected_concessions)]
+        if not concessoes_filtradas.empty:
             hexagonos_filtrados = hexagonos_filtrados[
-                hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
+                hexagonos_filtrados.intersects(concessoes_filtradas.unary_union)
             ]
 
+    # Adicionar hexágonos filtrados ao mapa
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -200,7 +161,9 @@ with tabs[0]:
             ).add_to(m)
 
         LayerControl().add_to(m)
-        st_folium(m, width=800, height=600)
+
+    # Renderizar mapa único
+    st_folium(m, width=800, height=600)
 
 # Aba 2: Gráfico
 with tabs[1]:
