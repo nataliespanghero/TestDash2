@@ -112,18 +112,16 @@ show_areas_urbanas = st.sidebar.selectbox("Áreas Urbanas:", ["Mostrar", "Escond
 
 # Filtro por coordenadas
 st.sidebar.header("Filtrar por Coordenadas")
-lat_ini = st.sidebar.text_input("Latitude Inicial (opcional):", placeholder="Ex: -22.817762")
-lon_ini = st.sidebar.text_input("Longitude Inicial (opcional):", placeholder="Ex: -43.372672")
-lat_fim = st.sidebar.text_input("Latitude Final (opcional):", placeholder="Ex: -22.664081")
-lon_fim = st.sidebar.text_input("Longitude Final (opcional):", placeholder="Ex: -43.222538")
+pair_1 = st.sidebar.text_input("Coordenadas Iniciais (Latitude, Longitude):", placeholder="Ex: -22.817762, -43.372672")
+pair_2 = st.sidebar.text_input("Coordenadas Finais (Latitude, Longitude - opcional):", placeholder="Ex: -22.664081, -43.222538")
 
 usar_filtro_coordenadas = False
 bbox = None
-if lat_ini and lon_ini:
+if pair_1:
     try:
-        lat_ini, lon_ini = float(lat_ini), float(lon_ini)
-        if lat_fim and lon_fim:
-            lat_fim, lon_fim = float(lat_fim), float(lon_fim)
+        lat_ini, lon_ini = map(float, pair_1.split(","))
+        if pair_2:
+            lat_fim, lon_fim = map(float, pair_2.split(","))
             bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
         else:
             bbox = Point(lon_ini, lat_ini).buffer(0.01)  # Pequena área ao redor do ponto
