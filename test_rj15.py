@@ -112,22 +112,25 @@ show_areas_urbanas = st.sidebar.selectbox("Áreas Urbanas:", ["Mostrar", "Escond
 
 # Filtro por coordenadas
 st.sidebar.header("Filtrar por Coordenadas")
-coordenadas_input = st.sidebar.text_input(
-    "Insira as coordenadas (formato: lat_ini, lon_ini | lat_fim, lon_fim):",
-    placeholder="-22.817762, -43.372672 | -22.664081, -43.222538"
-)
+lat_ini = st.sidebar.text_input("Latitude Inicial (opcional):", placeholder="Ex: -22.817762")
+lon_ini = st.sidebar.text_input("Longitude Inicial (opcional):", placeholder="Ex: -43.372672")
+lat_fim = st.sidebar.text_input("Latitude Final (opcional):", placeholder="Ex: -22.664081")
+lon_fim = st.sidebar.text_input("Longitude Final (opcional):", placeholder="Ex: -43.222538")
 
-# Processar coordenadas
 usar_filtro_coordenadas = False
-if coordenadas_input:
+bbox = None
+if lat_ini and lon_ini:
     try:
-        coords_parts = coordenadas_input.split('|')
-        lat_ini, lon_ini = map(float, coords_parts[0].strip().split(','))
-        lat_fim, lon_fim = map(float, coords_parts[1].strip().split(','))
-        bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
+        lat_ini, lon_ini = float(lat_ini), float(lon_ini)
+        if lat_fim and lon_fim:
+            lat_fim, lon_fim = float(lat_fim), float(lon_fim)
+            bbox = box(min(lon_ini, lon_fim), min(lat_ini, lat_fim), max(lon_ini, lon_fim), max(lat_ini, lat_fim))
+        else:
+            bbox = Point(lon_ini, lat_ini).buffer(0.01)  # Pequena área ao redor do ponto
         usar_filtro_coordenadas = True
     except ValueError:
-        st.sidebar.error("Erro: Formato inválido.")
+        st.sidebar.error("Erro: Insira coordenadas válidas.")
+
 
 # Aba 1: Mapa Interativo
 with tabs[0]:
