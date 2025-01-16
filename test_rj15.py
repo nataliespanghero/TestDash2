@@ -15,6 +15,13 @@ st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", l
 st.markdown(
     """
     <style>
+    @font-face {
+        font-family: 'Exo-Regular';
+        src: url('Exo-Regular.otf') format('opentype');
+    }
+    .stApp, h1, h2, h3, h4, h5, h6, p, label, div, button, .plotly .title {
+        font-family: 'Exo-Regular', sans-serif !important;
+    }
     .stApp {
         background-color: white !important;
     }
