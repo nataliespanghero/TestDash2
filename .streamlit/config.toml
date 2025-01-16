@@ -1,0 +1,12 @@
+[theme]
+base="light"  # Tema claro
+primaryColor="#2F50C1"  # Cor primária (azul do header e botões)
+backgroundColor="#FFFFFF"  # Fundo branco
+secondaryBackgroundColor="#F0F2F6"  # Fundo dos painéis laterais
+textColor="#2F50C1"  # Texto em azul
+font="sans serif"  # Fonte padrão, Exo-Regular será aplicada via CSS
+
+[server]
+headless = true
+port = 8501
+enableCORS = false
