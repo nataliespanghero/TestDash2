@@ -45,30 +45,13 @@ st.sidebar.image("logo.png", width=130)
 # Título principal
 st.title("Dashboard Interativo: Risco de Atropelamento")
 
+# Criação das abas
+tabs = st.tabs(["Mapa Interativo", "Gráfico de Riscos"])
+
 # Carregar dados
 malha_viaria = gpd.read_file('Risco3.geojson')
 hexagonos_h3 = gpd.read_file('H3.geojson')
 areas_urbanas = gpd.read_file('AU.geojson')
-
-# Calcular riscos para ambos os tipos (diurno e noturno)
-if 'risk_mean_KmP' not in hexagonos_h3.columns or 'risk_mean_KmP_dark' not in hexagonos_h3.columns:
-    for index, row in hexagonos_h3.iterrows():
-        segmentos_no_hex = malha_viaria[malha_viaria.intersects(row.geometry)]
-
-        if not segmentos_no_hex.empty:
-            hexagonos_h3.loc[index, 'risk_mean_KmP'] = segmentos_no_hex['KmP'].mean()
-            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP'] = segmentos_no_hex['KmP'].mean().round()
-            hexagonos_h3.loc[index, 'risk_mean_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean()
-            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP_dark'] = segmentos_no_hex['KmP_dark'].mean().round()
-        else:
-            hexagonos_h3.loc[index, 'risk_mean_KmP'] = 0
-            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP'] = 0
-            hexagonos_h3.loc[index, 'risk_mean_KmP_dark'] = 0
-            hexagonos_h3.loc[index, 'risk_mean_rounded_KmP_dark'] = 0
-
-    hexagonos_h3.to_file('hexagonos_h3_com_risco.geojson', driver='GeoJSON')
-
-hexagonos_h3 = gpd.read_file('hexagonos_h3_com_risco.geojson')
 
 # Escolha do tipo de risco pelo usuário
 st.sidebar.header("Configurações de Risco")
