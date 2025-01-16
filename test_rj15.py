@@ -126,6 +126,7 @@ with tabs[0]:
     map_output = st_folium(m, width=800, height=600, key="mapa_interativo")
     desenho = map_output.get("last_active_drawing")
 
+    # Aplicar filtros
     if desenho:
         try:
             geom = shape(desenho["geometry"])
@@ -133,7 +134,6 @@ with tabs[0]:
         except Exception as e:
             st.error(f"Erro ao processar o desenho: {e}")
 
-    # Aplicar filtros adicionais (riscos e concessões)
     if "Selecionar todos" not in selected_risks:
         selected_risk_values = [int(r.split()[1]) for r in selected_risks]
         hexagonos_filtrados = hexagonos_filtrados[
@@ -147,7 +147,7 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
-    # Renderizar mapa com hexágonos filtrados
+    # Renderizar hexágonos filtrados
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
