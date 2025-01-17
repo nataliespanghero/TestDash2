@@ -11,12 +11,21 @@ import plotly.graph_objects as go
 # Configuração do Streamlit
 st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
 
-# Cabeçalho com logo e título
+# Logo no topo da barra lateral
+st.sidebar.markdown(
+    """
+    <div style="text-align: center; margin-bottom: 20px;">
+        <img src="logo.png" alt="Logo" style="height: 80px;">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# Título principal no topo
 st.markdown(
     """
-    <div style="display: flex; align-items: center; background-color: #2F50C1; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
-        <img src="logo.png" alt="Logo" style="height: 50px; margin-right: 20px;">
-        <h1 style="color: white; font-size: 24px; margin: 0;">Dashboard Interativo: Risco de Atropelamento</h1>
+    <div style="display: flex; align-items: center; justify-content: center; background-color: #2F50C1; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+        <h1 style="color: white; font-size: 36px; margin: 0;">Dashboard Interativo: Risco de Atropelamento</h1>
     </div>
     """,
     unsafe_allow_html=True
@@ -42,21 +51,14 @@ st.markdown(
     /* Header e título principal */
     header {
         background-color: #2F50C1 !important;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px;
     }
 
-    header h1 {
+    h1 {
         color: white !important;
-        font-size: 24px;
+        font-size: 36px !important; /* Tamanho maior do título */
         font-weight: bold;
+        text-align: center;
         margin: 0;
-    }
-
-    header img {
-        max-height: 50px;
     }
 
     /* Caixa branca para mapa e gráfico */
@@ -65,13 +67,14 @@ st.markdown(
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-        margin: 20px;
+        margin: 20px auto;
+        max-width: 95%; /* Ajuste para centralizar e controlar tamanho */
     }
 
     /* Subtítulo "Mapa Interativo" */
     h2 {
         color: #2F50C1 !important;
-        font-size: 20px;
+        font-size: 24px;
         font-weight: bold;
         text-align: left;
         margin-bottom: 10px;
@@ -136,10 +139,10 @@ st.markdown(
         color: white !important;
     }
 
-    /* Ajuste no Mapa */
+    /* Ajuste no tamanho do mapa */
     iframe {
         width: 100% !important;
-        height: 800px !important;
+        height: 800px !important; /* Aumentado para acompanhar a área branca */
         border-radius: 10px;
     }
     </style>
