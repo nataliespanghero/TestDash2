@@ -1,7 +1,7 @@
 /* Importando a fonte Exo do Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Exo:wght@400;700&display=swap');
 
-/* Aplicando a fonte globalmente */
+/* Aplicando a fonte globalmente, exceto em elementos específicos */
 html, body, [class*="css"] {
     font-family: 'Exo', sans-serif !important; /* Fonte global */
     font-size: 18px; /* Tamanho do texto base */
@@ -24,16 +24,24 @@ h2 {
     color: #2F50C1 !important; /* Azul */
 }
 
-/* Estilo adicional para outros cabeçalhos, caso necessário */
-h3, h4, h5, h6 {
-    font-family: 'Exo', sans-serif !important;
-    font-weight: 400; /* Regular */
-    color: #091747; /* Cor padrão */
+/* Estilo específico para abas */
+.stTabs [data-baseweb="tab"] {
+    font-family: 'Exo', sans-serif !important; /* Fonte para abas */
+    font-size: 16px !important; /* Tamanho ajustado */
+    font-weight: 700 !important; /* Negrito */
+    color: #2F50C1 !important; /* Azul */
+    background-color: white !important; /* Fundo branco */
+    border-radius: 5px 5px 0 0 !important;
+    padding: 10px !important;
 }
 
-/* Caso queira destacar textos específicos */
-p, span, li {
-    font-family: 'Exo', sans-serif !important;
-    font-weight: 400; /* Regular */
-    color: #091747; /* Cor do texto */
+.stTabs [data-baseweb="tab"][aria-selected="true"] {
+    background-color: #2F50C1 !important; /* Fundo azul ao selecionar */
+    color: white !important; /* Texto branco */
 }
+
+/* Restaurando a cor global sem afetar as abas */
+[class*="css"]:not([data-baseweb="tab"]) {
+    color: #091747 !important; /* Cor padrão para texto */
+}
+
