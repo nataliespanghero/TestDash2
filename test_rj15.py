@@ -93,28 +93,34 @@ st.markdown(
         color: white !important;
     }
 
-    /* Botões de seleção ("Selecionar todos") */
-    span.st-ck, span.st-bx, span.st-dc, span.st-ee, span.st-ef {
+        /* Ajuste no botão "Selecionar todos" */
+    span.st-bp {
         background-color: #2F50C1 !important; /* Fundo azul */
         color: white !important; /* Texto branco */
         font-weight: bold !important; /* Texto em negrito */
         border-radius: 5px !important; /* Cantos arredondados */
-        padding: 5px !important; /* Espaçamento interno */
+        padding: 5px 10px !important; /* Espaçamento interno */
+    }
+
+    /* Texto dentro do botão "Selecionar todos" */
+    span.st-bp > span {
+        color: white !important; /* Texto branco */
+        font-weight: bold !important; /* Texto em negrito */
     }
 
     /* Ícone "Delete" no botão */
-    span.st-ck svg, span.st-bx svg, span.st-dc svg, span.st-ee svg, span.st-ef svg {
+    span.st-bp svg {
         fill: white !important; /* Cor do ícone branco */
     }
 
-    /* Hover no botão de seleção */
-    span.st-ck:hover, span.st-bx:hover, span.st-dc:hover, span.st-ee:hover, span.st-ef:hover {
+    /* Hover no botão "Selecionar todos" */
+    span.st-bp:hover {
         background-color: #1E3C91 !important; /* Azul mais escuro no hover */
         color: white !important;
     }
 
     /* Hover no ícone "Delete" */
-    span.st-ck svg:hover, span.st-bx svg:hover, span.st-dc svg:hover, span.st-ee svg:hover, span.st-ef svg:hover {
+    span.st-bp svg:hover {
         fill: #1E3C91 !important; /* Ícone azul mais escuro no hover */
     }
 
