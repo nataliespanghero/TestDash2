@@ -199,9 +199,11 @@ st.markdown(
         border: none; /* Remove bordas adicionais */
     }
 
+    /* Ajuste para o iframe do mapa */
     iframe.st-emotion-cache-1tvzk6f {
-        height: auto !important; /* Ajusta automaticamente a altura ao conteúdo */
-        margin-bottom: 0 !important; /* Remove qualquer margem inferior */
+        height: 600px !important; /* Define uma altura fixa de 600px */
+        max-height: none !important; /* Remove limite máximo de altura */
+        margin-bottom: 0 !important; /* Remove a margem inferior */
     }
     
     </style>
