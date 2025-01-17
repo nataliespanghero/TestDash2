@@ -94,7 +94,7 @@ st.markdown(
     }
 
     /* Estilo para o botão "Selecionar todos" */
-    .st-multi-select-box div[data-baseweb="tag"] {
+    .st-multi-select-box div[data-baseweb="tag"].st-bp {
         background-color: #2F50C1 !important; /* Fundo azul */
         color: white !important; /* Texto branco */
         font-weight: bold !important; /* Texto em negrito */
@@ -104,30 +104,24 @@ st.markdown(
     }
 
     /* Texto dentro do botão "Selecionar todos" */
-    .st-multi-select-box div[data-baseweb="tag"] > span {
+    .st-multi-select-box div[data-baseweb="tag"].st-bp > span {
         color: white !important; /* Texto branco */
-        font-weight: bold !important; /* Negrito */
+        font-weight: bold !important; /* Texto em negrito */
     }
 
     /* Estilo para o ícone "Delete" */
-    .st-multi-select-box div[data-baseweb="tag"] > span > svg {
+    .st-multi-select-box div[data-baseweb="tag"].st-bp > span > svg {
         fill: white !important; /* Ícone branco */
     }
 
-    /* Estilo para itens selecionados no dropdown */
-    .st-multi-select-box div[data-baseweb="tag-list"] > div {
-        background-color: #2F50C1 !important; /* Fundo azul */
-        color: white !important; /* Texto branco */
-    }
-
     /* Estilo para hover no botão "Selecionar todos" */
-    .st-multi-select-box div[data-baseweb="tag"]:hover {
+    .st-multi-select-box div[data-baseweb="tag"].st-bp:hover {
         background-color: #1E3C91 !important; /* Azul mais escuro no hover */
         color: white !important;
     }
 
     /* Estilo para hover no ícone "Delete" */
-    .st-multi-select-box div[data-baseweb="tag"] > span > svg:hover {
+    .st-multi-select-box div[data-baseweb="tag"].st-bp > span > svg:hover {
         fill: #1E3C91 !important; /* Azul mais escuro no hover */
     }
 
