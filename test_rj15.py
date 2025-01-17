@@ -64,10 +64,10 @@ st.markdown(
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-        margin: 20px auto;
+        margin: 20px auto 0 auto; /* Remove a margem inferior */
         max-width: 95%; /* Ajuste para centralizar e controlar tamanho */
     }
-
+    
     /* Subtítulo "Mapa Interativo" */
     h2 {
         color: #2F50C1 !important;
