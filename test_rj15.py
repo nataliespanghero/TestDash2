@@ -15,10 +15,9 @@ st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", l
 # Adicionar a imagem no topo da sidebar com tamanho ajustado
 st.sidebar.image("logo.png", width=130)
 
-# Título principal no topo
 st.markdown(
     """
-    <div style="display: flex; align-items: center; justify-content: center; background-color: #2F50C1; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+    <div style="display: flex; align-items: flex-start; justify-content: flex-start; background-color: #2F50C1; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
         <h1 style="color: white; font-size: 48px; margin: 0;">Dashboard Interativo: Risco de Atropelamento</h1>
     </div>
     """,
@@ -33,7 +32,11 @@ st.markdown(
         font-family: 'Exo-Regular';
         src: url('Exo-Regular.otf') format('opentype');
     }
-
+    @font-face {
+        font-family: 'Exo-Bold';
+        src: url('Exo-Bold.otf') format('opentype');
+    }
+    
     /* Estilo global */
     * {
         font-family: 'Exo-Regular', sans-serif !important;
@@ -50,7 +53,7 @@ st.markdown(
     h1 {
         color: white !important;
         font-size: 48px !important; /* Tamanho maior do título */
-        font-weight: bold;
+        font-family: 'Exo-Bold', sans-serif !important; /* Aplicar Exo-Bold ao título */
         text-align: center;
         margin: 0;
     }
@@ -69,6 +72,7 @@ st.markdown(
     h2 {
         color: #2F50C1 !important;
         font-size: 24px;
+        font-family: 'Exo-Regular', sans-serif !important; /* Garantir uso da fonte Exo-Regular */
         font-weight: bold;
         text-align: left;
         margin-bottom: 10px;
@@ -97,6 +101,7 @@ st.markdown(
     span.st-bp {
         background-color: #2F50C1 !important; /* Fundo azul */
         color: white !important; /* Texto branco */
+        font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
         font-weight: bold !important; /* Texto em negrito */
         border-radius: 5px !important; /* Cantos arredondados */
         padding: 5px 20px !important; /* Aumenta o espaço interno */
@@ -109,6 +114,7 @@ st.markdown(
     /* Texto dentro do botão "Selecionar todos" */
     span.st-bp > span {
         color: white !important; /* Texto branco */
+        font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
         font-weight: bold !important; /* Texto em negrito */
         white-space: nowrap !important; /* Garante que o texto não quebre */
         text-overflow: unset !important; /* Remove os "..." */
@@ -140,7 +146,8 @@ st.markdown(
     /* Texto no select box e áreas urbanas */
     .stSelectbox div, .stRadio div {
         color: #2F50C1 !important;
-        font-weight: bold !important;
+        font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
+        font-weight: bold !important; /* Texto em negrito */
     }
 
     /* Inputs e caixas de seleção */
@@ -157,7 +164,8 @@ st.markdown(
     }
     section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] label {
         color: #2F50C1 !important;
-        font-weight: bold !important;
+        font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
+        font-weight: bold !important; /* Texto em negrito */
     }
 
     /* Hover nos botões */
