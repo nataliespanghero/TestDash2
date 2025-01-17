@@ -11,15 +11,8 @@ import plotly.graph_objects as go
 # Configuração do Streamlit
 st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
 
-# Adicionar logo no topo da barra lateral
-st.sidebar.markdown(
-    """
-    <div style="text-align: center; margin-bottom: 20px;">
-        <img src="logo.png" alt="Logo" style="height: 100px; max-width: 100%; object-fit: contain;">
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# Adicionar a imagem no topo da sidebar com tamanho ajustado
+st.sidebar.image("logo.png", width=130)
 
 # Título principal no topo
 st.markdown(
