@@ -94,13 +94,13 @@ st.markdown(
     }
 
     /* Botões de seleção ("Selecionar todos") */
-    .st-multi-select-box > div > div > div[data-testid="stTag"] {
-        background-color: #2F50C1 !important; /* Cor azul */
-        color: white !important;
-        font-weight: bold !important;
-        border-radius: 5px !important;
-        border: none !important;
+    span.st-ck, span.st-bx, span.st-dc, span.st-ee, span.st-ef {
+        background-color: #2F50C1 !important; /* Fundo azul */
+        color: white !important; /* Texto branco */
+        font-weight: bold !important; /* Texto em negrito */
+        border-radius: 5px !important; /* Cantos arredondados */
     }
+
 
     .st-multi-select-box > div > div > div[data-testid="stTag"] svg {
         fill: white !important; /* Cor do ícone */
