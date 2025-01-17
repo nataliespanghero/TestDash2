@@ -28,6 +28,26 @@ st.markdown(
         background-color: #2F50C1 !important; /* Fundo azul da página */
     }
 
+    /* Header e título principal */
+    header {
+        background-color: #2F50C1 !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    header h1 {
+        color: white !important;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    header img {
+        max-height: 50px;
+    }
+
     /* Caixa branca para mapa e gráfico */
     .main {
         background-color: white !important;
@@ -35,18 +55,6 @@ st.markdown(
         padding: 20px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         margin: 20px;
-    }
-
-    /* Header e título principal */
-    header {
-        background-color: #2F50C1 !important;
-    }
-    h1 {
-        color: white !important;
-        font-size: 24px;
-        font-weight: bold;
-        text-align: center;
-        margin: 0;
     }
 
     /* Subtítulo "Mapa Interativo" */
@@ -116,11 +124,17 @@ st.markdown(
         background-color: #1E3C91 !important;
         color: white !important;
     }
+
+    /* Ajuste no Mapa */
+    iframe {
+        width: 100% !important;
+        height: 800px !important;
+        border-radius: 10px;
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
-
 
 # Criação das abas
 tabs = st.tabs(["Mapa Interativo", "Gráfico de Riscos"])
@@ -254,7 +268,7 @@ with tabs[0]:
         LayerControl().add_to(m)
 
     # Renderizar o mapa final
-    st_folium(m, width=800, height=600)
+    st_folium(m, width=1200, height=600)
 
 # Aba 2: Gráfico
 with tabs[1]:
