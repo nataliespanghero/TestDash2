@@ -8,6 +8,9 @@ from shapely.geometry import shape, box
 from streamlit_folium import st_folium
 import plotly.graph_objects as go
 
+# Configuração do Streamlit
+st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
+
 # Configuração de CSS Global
 st.markdown(
     """
