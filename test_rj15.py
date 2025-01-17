@@ -275,7 +275,7 @@ with tabs[0]:
         LayerControl().add_to(m)
 
     # Renderizar o mapa final
-    st_folium(m, width=800, height=600)
+    st_folium(m, width=None, height=600)
 
 # Aba 2: Gráfico
 with tabs[1]:
