@@ -8,6 +8,7 @@ from shapely.geometry import shape, box
 from streamlit_folium import st_folium
 import plotly.graph_objects as go
 
+# Configuração de CSS Global
 st.markdown(
     """
     <style>
@@ -21,7 +22,16 @@ st.markdown(
         font-family: 'Exo-Regular', sans-serif !important;
     }
     .stApp {
+        background-color: #2F50C1 !important; /* Fundo azul da página */
+    }
+
+    /* Caixa branca para mapa e gráfico */
+    .main {
         background-color: white !important;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        margin: 20px;
     }
 
     /* Header e título principal */
@@ -36,6 +46,15 @@ st.markdown(
         background-color: #2F50C1 !important;
         padding: 10px;
         margin: 0;
+    }
+
+    /* Subtítulo "Mapa Interativo" */
+    h2 {
+        color: #2F50C1 !important;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: left;
+        margin-bottom: 10px;
     }
 
     /* Estilo das abas */
@@ -97,7 +116,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 
 # Adicionar a imagem no topo da sidebar com tamanho ajustado
 st.sidebar.image("logo.png", width=130)
