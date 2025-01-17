@@ -11,6 +11,17 @@ import plotly.graph_objects as go
 # Configuração do Streamlit
 st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
 
+# Cabeçalho com logo e título
+st.markdown(
+    """
+    <div style="display: flex; align-items: center; background-color: #2F50C1; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+        <img src="logo.png" alt="Logo" style="height: 50px; margin-right: 20px;">
+        <h1 style="color: white; font-size: 24px; margin: 0;">Dashboard Interativo: Risco de Atropelamento</h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 # Configuração de CSS Global
 st.markdown(
     """
