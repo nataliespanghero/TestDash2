@@ -58,14 +58,31 @@ st.markdown(
         margin: 0;
     }
 
-    /* Caixa branca para mapa e gráfico */
+   /* Caixa branca para mapa e gráfico */
     .main {
         background-color: white !important;
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-        margin: 20px auto 0 auto; /* Remove a margem inferior */
+        margin: 20px auto 0 auto; /* Remove margem inferior */
         max-width: 95%; /* Ajuste para centralizar e controlar tamanho */
+    }
+
+    iframe {
+        width: 100% !important;
+        height: calc(100vh - 300px) !important; /* Ajuste para usar altura da viewport */
+        border-radius: 10px;
+        border: none; /* Remove bordas adicionais */
+    }
+
+    /* Remove padding ou margin adicionais de elementos internos */
+    .element-container {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .main iframe {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
     }
     
     /* Subtítulo "Mapa Interativo" */
