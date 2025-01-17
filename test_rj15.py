@@ -8,9 +8,6 @@ from shapely.geometry import shape, box
 from streamlit_folium import st_folium
 import plotly.graph_objects as go
 
-# Configuração do Streamlit
-st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
-
 st.markdown(
     """
     <style>
@@ -36,6 +33,9 @@ st.markdown(
         font-size: 24px;
         font-weight: bold;
         text-align: center;
+        background-color: #2F50C1 !important;
+        padding: 10px;
+        margin: 0;
     }
 
     /* Estilo das abas */
@@ -63,6 +63,12 @@ st.markdown(
     }
     .st-multi-select-box > div > div > div[data-testid="stTag"] svg {
         fill: white !important;
+    }
+
+    /* Texto no select box e áreas urbanas */
+    .stSelectbox div, .stRadio div {
+        color: #2F50C1 !important;
+        font-weight: bold !important;
     }
 
     /* Inputs e caixas de seleção */
