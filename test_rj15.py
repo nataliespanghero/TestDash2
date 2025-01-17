@@ -11,7 +11,6 @@ import plotly.graph_objects as go
 # Configuração do Streamlit
 st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
 
-# Configuração de CSS Global
 st.markdown(
     """
     <style>
@@ -23,28 +22,39 @@ st.markdown(
     /* Estilo global */
     * {
         font-family: 'Exo-Regular', sans-serif !important;
-        color: #2F50C1 !important;
-        background-color: #FFFFFF !important;
     }
-
     .stApp {
         background-color: white !important;
     }
 
-    /* Header e abas */
-    header, .stTabs [data-baseweb="tab-list"] {
+    /* Header e título principal */
+    header {
+        background-color: #2F50C1 !important;
+    }
+    h1 {
+        color: white !important;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /* Estilo das abas */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: #2F50C1 !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: white !important;
+        color: #2F50C1 !important;
+        font-weight: bold !important;
+        border-radius: 5px 5px 0 0 !important;
+        padding: 10px !important;
+    }
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {
         background-color: #2F50C1 !important;
         color: white !important;
     }
-    .stTabs [data-baseweb="tab"]:hover {
-        background-color: #1E3C91 !important;
-    }
-    .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background-color: #1E3C91 !important;
-        font-weight: bold !important;
-    }
 
-    /* Botões "Selecionar todos" */
+    /* Botões de seleção ("Selecionar todos") */
     .st-multi-select-box > div > div > div[data-testid="stTag"] {
         background-color: #2F50C1 !important;
         color: white !important;
@@ -53,6 +63,13 @@ st.markdown(
     }
     .st-multi-select-box > div > div > div[data-testid="stTag"] svg {
         fill: white !important;
+    }
+
+    /* Inputs e caixas de seleção */
+    div[data-baseweb="select"], div[data-baseweb="input"] {
+        border: 2px solid #2F50C1 !important;
+        border-radius: 5px !important;
+        padding: 5px !important;
     }
 
     /* Sidebar */
@@ -65,28 +82,16 @@ st.markdown(
         font-weight: bold !important;
     }
 
-    /* Inputs e bordas */
-    div[data-baseweb="select"], div[data-baseweb="input"] {
-        border: 2px solid #2F50C1 !important;
-        border-radius: 5px !important;
-        padding: 5px !important;
-    }
-
-    .stSelectbox div, .stMultiselect div, .stRadio div {
-        color: #2F50C1 !important;
-    }
-
-    /* Botão azul customizado (opcional) */
-    button {
-        background-color: #2F50C1 !important;
+    /* Hover nos botões */
+    button:hover {
+        background-color: #1E3C91 !important;
         color: white !important;
-        border-radius: 5px !important;
-        font-weight: bold !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 # Adicionar a imagem no topo da sidebar com tamanho ajustado
 st.sidebar.image("logo.png", width=130)
