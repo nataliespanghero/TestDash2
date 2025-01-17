@@ -19,8 +19,11 @@ st.markdown(
         font-family: 'Exo-Regular';
         src: url('Exo-Regular.otf') format('opentype');
     }
-    .stApp, h1, h2, h3, h4, h5, h6, p, label, div, button, .plotly .title {
+    /* Força os estilos customizados em toda a aplicação */
+    * {
         font-family: 'Exo-Regular', sans-serif !important;
+        color: #2F50C1 !important;
+        background-color: #FFFFFF !important;
     }
     .stApp {
         background-color: white !important;
