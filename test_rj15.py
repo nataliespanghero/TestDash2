@@ -19,45 +19,69 @@ st.markdown(
         font-family: 'Exo-Regular';
         src: url('Exo-Regular.otf') format('opentype');
     }
-    /* Força os estilos customizados em toda a aplicação */
+
+    /* Estilo global */
     * {
         font-family: 'Exo-Regular', sans-serif !important;
         color: #2F50C1 !important;
         background-color: #FFFFFF !important;
     }
+
     .stApp {
         background-color: white !important;
     }
-    header {
+
+    /* Header e abas */
+    header, .stTabs [data-baseweb="tab-list"] {
         background-color: #2F50C1 !important;
+        color: white !important;
     }
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #1E3C91 !important;
+    }
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {
+        background-color: #1E3C91 !important;
+        font-weight: bold !important;
+    }
+
+    /* Botões "Selecionar todos" */
+    .st-multi-select-box > div > div > div[data-testid="stTag"] {
+        background-color: #2F50C1 !important;
+        color: white !important;
+        font-weight: bold !important;
+        border-radius: 5px !important;
+    }
+    .st-multi-select-box > div > div > div[data-testid="stTag"] svg {
+        fill: white !important;
+    }
+
+    /* Sidebar */
     section[data-testid="stSidebar"] {
         background-color: white !important;
         color: #2F50C1 !important;
     }
     section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] label {
         color: #2F50C1 !important;
-        font-weight: bold;
+        font-weight: bold !important;
     }
-    h1 {
-        color: #2F50C1 !important;
-        font-size: 24px;
-        font-weight: bold;
-    }
-    .plotly .title {
-        fill: #2F50C1 !important;
-    }
-    .stSelectbox div, .stMultiselect div, .stRadio div {
-        color: #2F50C1 !important;
-    }
+
+    /* Inputs e bordas */
     div[data-baseweb="select"], div[data-baseweb="input"] {
         border: 2px solid #2F50C1 !important;
         border-radius: 5px !important;
         padding: 5px !important;
     }
-    .st-multi-select-box > div > div {
+
+    .stSelectbox div, .stMultiselect div, .stRadio div {
+        color: #2F50C1 !important;
+    }
+
+    /* Botão azul customizado (opcional) */
+    button {
         background-color: #2F50C1 !important;
         color: white !important;
+        border-radius: 5px !important;
+        font-weight: bold !important;
     }
     </style>
     """,
