@@ -137,6 +137,7 @@ st.markdown(
         width: 100% !important;
         height: 800px !important; /* Aumentado para acompanhar a área branca */
         border-radius: 10px;
+        border: none; /* Remove bordas adicionais */
     }
     </style>
     """,
