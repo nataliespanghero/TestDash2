@@ -118,12 +118,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Adicionar a imagem no topo da sidebar com tamanho ajustado
-st.sidebar.image("logo.png", width=130)
-
-# Título principal
-st.title("Dashboard Interativo: Risco de Atropelamento")
-
 # Criação das abas
 tabs = st.tabs(["Mapa Interativo", "Gráfico de Riscos"])
 
@@ -256,7 +250,7 @@ with tabs[0]:
         LayerControl().add_to(m)
 
     # Renderizar o mapa final
-    st_folium(m, width=800, height=600)
+    st_folium(m, width=1000, height=700)
 
 # Aba 2: Gráfico
 with tabs[1]:
