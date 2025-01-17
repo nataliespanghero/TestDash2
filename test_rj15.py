@@ -93,36 +93,29 @@ st.markdown(
         color: white !important;
     }
 
-    /* Estilo para o botão "Selecionar todos" */
-    .st-multi-select-box div[data-baseweb="tag"].st-bp {
+    /* Botões de seleção ("Selecionar todos") */
+    span.st-ck, span.st-bx, span.st-dc, span.st-ee, span.st-ef {
         background-color: #2F50C1 !important; /* Fundo azul */
         color: white !important; /* Texto branco */
         font-weight: bold !important; /* Texto em negrito */
         border-radius: 5px !important; /* Cantos arredondados */
-        border: none !important; /* Remove bordas */
-        padding: 5px 10px !important; /* Espaçamento interno */
+        padding: 5px !important; /* Espaçamento interno */
     }
 
-    /* Texto dentro do botão "Selecionar todos" */
-    .st-multi-select-box div[data-baseweb="tag"].st-bp > span {
-        color: white !important; /* Texto branco */
-        font-weight: bold !important; /* Texto em negrito */
+    /* Ícone "Delete" no botão */
+    span.st-ck svg, span.st-bx svg, span.st-dc svg, span.st-ee svg, span.st-ef svg {
+        fill: white !important; /* Cor do ícone branco */
     }
 
-    /* Estilo para o ícone "Delete" */
-    .st-multi-select-box div[data-baseweb="tag"].st-bp > span > svg {
-        fill: white !important; /* Ícone branco */
-    }
-
-    /* Estilo para hover no botão "Selecionar todos" */
-    .st-multi-select-box div[data-baseweb="tag"].st-bp:hover {
+    /* Hover no botão de seleção */
+    span.st-ck:hover, span.st-bx:hover, span.st-dc:hover, span.st-ee:hover, span.st-ef:hover {
         background-color: #1E3C91 !important; /* Azul mais escuro no hover */
         color: white !important;
     }
 
-    /* Estilo para hover no ícone "Delete" */
-    .st-multi-select-box div[data-baseweb="tag"].st-bp > span > svg:hover {
-        fill: #1E3C91 !important; /* Azul mais escuro no hover */
+    /* Hover no ícone "Delete" */
+    span.st-ck svg:hover, span.st-bx svg:hover, span.st-dc svg:hover, span.st-ee svg:hover, span.st-ef svg:hover {
+        fill: #1E3C91 !important; /* Ícone azul mais escuro no hover */
     }
 
     /* Ajuste adicional para a borda dos botões */
