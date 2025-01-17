@@ -93,25 +93,26 @@ st.markdown(
         color: white !important;
     }
 
-    /* Estilo para o botão "Selecionar todos" */
-    span.st-bp, span.st-cd, span.st-br, span.st-bs, span.st-bt, span.st-bu, span.st-b0, span.st-dz, span.st-c2, span.st-cr, span.st-cs, span.st-ct, span.st-cu, span.st-b5, span.st-b7, span.st-b6, span.st-b8, span.st-e0, span.st-e1, span.st-e2, span.st-e3, span.st-ay, span.st-e4, span.st-az, span.st-e5, span.st-cl, span.st-e6, span.st-e7, span.st-au, span.st-e8, span.st-e9, span.st-ea, span.st-d6, span.st-eb, span.st-bi, span.st-ec, span.st-ed {
+        /* Estilo para o botão "Selecionar todos" */
+    .st-multi-select-box div[data-baseweb="tag"] {
         background-color: #2F50C1 !important; /* Fundo azul */
         color: white !important; /* Texto branco */
         font-weight: bold !important; /* Texto em negrito */
         border-radius: 5px !important; /* Cantos arredondados */
         padding: 5px 10px !important; /* Espaçamento interno */
+        border: none !important; /* Remove bordas */
     }
 
     /* Estilo para o texto dentro do botão */
-    span.st-ck, span.st-bx, span.st-dc, span.st-ee, span.st-ef {
+    .st-multi-select-box div[data-baseweb="tag"] span[title] {
         color: white !important; /* Texto branco */
+        font-weight: bold !important; /* Negrito */
     }
 
     /* Estilo para o ícone "Delete" */
-    svg.st-de, svg.st-dt, svg.st-ej, svg.st-ek, svg.st-el {
-        fill: white !important; /* Ícone na cor branca */
+    .st-multi-select-box div[data-baseweb="tag"] svg {
+        fill: white !important; /* Ícone branco */
     }
-
 
     /* Ajuste adicional para a borda dos botões */
     .st-multi-select-box > div {
