@@ -25,25 +25,34 @@ st.markdown(
         background-color: #2F50C1 !important; /* Fundo azul da página */
     }
 
-    /* Caixa branca para mapa e gráfico */
+    /* Header e logo */
+    header {
+        background-color: #2F50C1 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 0;
+    }
+    header img {
+        max-width: 100px;
+        margin-right: 10px;
+    }
+    header h1 {
+        color: white !important;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    /* Área do mapa e gráfico */
     .main {
         background-color: white !important;
         border-radius: 10px;
         padding: 20px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         margin: 20px;
-    }
-
-    /* Header e título principal */
-    header {
-        background-color: #2F50C1 !important;
-    }
-    h1 {
-        color: white !important;
-        font-size: 24px;
-        font-weight: bold;
-        text-align: center;
-        margin: 0;
+        width: 90%;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     /* Subtítulo "Mapa Interativo" */
@@ -53,25 +62,9 @@ st.markdown(
         font-weight: bold;
         text-align: left;
         margin-bottom: 10px;
-        background-color: white !important; /* Fundo branco para o título */
+        background-color: white !important; /* Fundo branco */
         padding: 10px;
         border-radius: 5px;
-    }
-
-    /* Estilo das abas */
-    .stTabs [data-baseweb="tab-list"] {
-        background-color: #2F50C1 !important;
-    }
-    .stTabs [data-baseweb="tab"] {
-        background-color: white !important;
-        color: #2F50C1 !important;
-        font-weight: bold !important;
-        border-radius: 5px 5px 0 0 !important;
-        padding: 10px !important;
-    }
-    .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background-color: #2F50C1 !important;
-        color: white !important;
     }
 
     /* Botões de seleção ("Selecionar todos") */
@@ -85,8 +78,12 @@ st.markdown(
         fill: white !important;
     }
 
-    /* Texto no select box e áreas urbanas */
-    .stSelectbox div, .stRadio div {
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: white !important;
+        color: #2F50C1 !important;
+    }
+    section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] label {
         color: #2F50C1 !important;
         font-weight: bold !important;
     }
@@ -98,20 +95,16 @@ st.markdown(
         padding: 5px !important;
     }
 
-    /* Sidebar */
-    section[data-testid="stSidebar"] {
-        background-color: white !important;
-        color: #2F50C1 !important;
-    }
-    section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] label {
-        color: #2F50C1 !important;
-        font-weight: bold !important;
-    }
-
     /* Hover nos botões */
     button:hover {
         background-color: #1E3C91 !important;
         color: white !important;
+    }
+
+    /* Ajuste de mapa */
+    iframe {
+        width: 100% !important;
+        height: 600px !important;
     }
     </style>
     """,
@@ -250,7 +243,7 @@ with tabs[0]:
         LayerControl().add_to(m)
 
     # Renderizar o mapa final
-    st_folium(m, width=800, height=600)
+    st_folium(m, width=1200, height=600)
 
 # Aba 2: Gráfico
 with tabs[1]:
