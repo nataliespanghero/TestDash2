@@ -93,16 +93,17 @@ st.markdown(
         color: white !important;
     }
 
-    /* Botões de seleção ("Selecionar todos") */
+       /* Botões de seleção ("Selecionar todos") */
     .st-multi-select-box > div > div > div[data-testid="stTag"] {
-        background-color: #2F50C1 !important;
+        background-color: #2F50C1 !important; /* Cor azul */
         color: white !important;
         font-weight: bold !important;
         border-radius: 5px !important;
     }
     .st-multi-select-box > div > div > div[data-testid="stTag"] svg {
-        fill: white !important;
+    fill: white !important;
     }
+
 
     /* Texto no select box e áreas urbanas */
     .stSelectbox div, .stRadio div {
