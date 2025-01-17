@@ -1,26 +1,39 @@
-@font-face {
-    font-family: 'Exo-Regular';
-    src: url('Exo-Regular.otf') format('opentype');
-}
-@font-face {
-    font-family: 'Exo-Bold';
-    src: url('Exo-Bold.otf') format('opentype');
-}
+/* Importando a fonte Exo do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@400;700&display=swap');
 
+/* Aplicando a fonte globalmente */
 html, body, [class*="css"] {
-    font-family: 'Exo-Regular', sans-serif !important;
-    font-size: 18px; /* Ajuste o tamanho da fonte conforme necessário */
+    font-family: 'Exo', sans-serif !important; /* Fonte global */
+    font-size: 18px; /* Tamanho do texto base */
     font-weight: 400; /* Regular */
-    color: #091747; /* Ajuste a cor do texto, se necessário */
+    color: #091747; /* Cor do texto */
 }
 
+/* Estilo para títulos */
 h1 {
-    font-family: 'Exo-Bold', sans-serif !important;
-    font-size: 48px; /* Ajuste o tamanho do título */
-    color: white !important;
+    font-family: 'Exo', sans-serif !important; /* Fonte para o título */
+    font-size: 48px; /* Tamanho do título principal */
+    font-weight: 700; /* Negrito */
+    color: white !important; /* Cor branca */
 }
 
 h2 {
-    font-family: 'Exo-Bold', sans-serif !important;
-    color: #2F50C1 !important;
+    font-family: 'Exo', sans-serif !important; /* Fonte para subtítulos */
+    font-size: 36px; /* Tamanho do subtítulo */
+    font-weight: 700; /* Negrito */
+    color: #2F50C1 !important; /* Azul */
+}
+
+/* Estilo adicional para outros cabeçalhos, caso necessário */
+h3, h4, h5, h6 {
+    font-family: 'Exo', sans-serif !important;
+    font-weight: 400; /* Regular */
+    color: #091747; /* Cor padrão */
+}
+
+/* Caso queira destacar textos específicos */
+p, span, li {
+    font-family: 'Exo', sans-serif !important;
+    font-weight: 400; /* Regular */
+    color: #091747; /* Cor do texto */
 }
