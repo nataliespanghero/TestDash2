@@ -201,7 +201,7 @@ st.markdown(
 
     /* Ajuste para o iframe do mapa */
     iframe.st-emotion-cache-1tvzk6f {
-        height: 600px !important; /* Define uma altura fixa de 600px */
+        height: 700px !important; /* Define uma altura fixa de 700px */
         max-height: none !important; /* Remove limite máximo de altura */
         margin-bottom: 0 !important; /* Remove a margem inferior */
     }
