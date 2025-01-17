@@ -54,7 +54,7 @@ st.markdown(
         color: white !important;
         font-size: 48px !important; /* Tamanho maior do título */
         font-family: 'Exo-Bold', sans-serif !important; /* Aplicar Exo-Bold ao título */
-        text-align: center;
+        text-align: flex-start;
         margin: 0;
     }
 
