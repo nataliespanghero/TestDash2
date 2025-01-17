@@ -1,0 +1,26 @@
+@font-face {
+    font-family: 'Exo-Regular';
+    src: url('Exo-Regular.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Exo-Bold';
+    src: url('Exo-Bold.otf') format('opentype');
+}
+
+html, body, [class*="css"] {
+    font-family: 'Exo-Regular', sans-serif !important;
+    font-size: 18px; /* Ajuste o tamanho da fonte conforme necessário */
+    font-weight: 400; /* Regular */
+    color: #091747; /* Ajuste a cor do texto, se necessário */
+}
+
+h1 {
+    font-family: 'Exo-Bold', sans-serif !important;
+    font-size: 48px; /* Ajuste o tamanho do título */
+    color: white !important;
+}
+
+h2 {
+    font-family: 'Exo-Bold', sans-serif !important;
+    color: #2F50C1 !important;
+}
