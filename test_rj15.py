@@ -25,32 +25,25 @@ st.markdown(
         background-color: #2F50C1 !important; /* Fundo azul da página */
     }
 
-    /* Header e título principal */
-    header {
-        background-color: #2F50C1 !important;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 20px;
-    }
-    header img {
-        max-height: 50px;
-    }
-    header h1 {
-        color: white !important;
-        font-size: 24px;
-        font-weight: bold;
-        margin: 0;
-    }
-
-    /* Área do mapa e gráfico */
+    /* Caixa branca para mapa e gráfico */
     .main {
         background-color: white !important;
         border-radius: 10px;
         padding: 20px;
-        margin: 20px auto;
-        width: 90%;
-        max-width: 1200px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        margin: 20px;
+    }
+
+    /* Header e título principal */
+    header {
+        background-color: #2F50C1 !important;
+    }
+    h1 {
+        color: white !important;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin: 0;
     }
 
     /* Subtítulo "Mapa Interativo" */
@@ -60,7 +53,7 @@ st.markdown(
         font-weight: bold;
         text-align: left;
         margin-bottom: 10px;
-        background-color: white !important; /* Fundo branco */
+        background-color: white !important; /* Fundo branco para o título */
         padding: 10px;
         border-radius: 5px;
     }
@@ -120,17 +113,11 @@ st.markdown(
         background-color: #1E3C91 !important;
         color: white !important;
     }
-
-    /* Ajuste no iframe do mapa */
-    iframe {
-        width: 100% !important;
-        height: 700px !important;
-        border-radius: 10px !important;
-    }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 # Criação das abas
 tabs = st.tabs(["Mapa Interativo", "Gráfico de Riscos"])
@@ -264,7 +251,7 @@ with tabs[0]:
         LayerControl().add_to(m)
 
     # Renderizar o mapa final
-    st_folium(m, width=1200, height=600)
+    st_folium(m, width=800, height=600)
 
 # Aba 2: Gráfico
 with tabs[1]:
