@@ -15,7 +15,7 @@ st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", l
 st.sidebar.markdown(
     """
     <div style="text-align: center; margin-bottom: 20px;">
-        <img src="logo.png" alt="Logo" style="height: 80px;">
+        <img src="logo.png" alt="Logo" style="height: 100px; max-width: 100%; object-fit: contain;">
     </div>
     """,
     unsafe_allow_html=True
@@ -25,7 +25,7 @@ st.sidebar.markdown(
 st.markdown(
     """
     <div style="display: flex; align-items: center; justify-content: center; background-color: #2F50C1; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
-        <h1 style="color: white; font-size: 36px; margin: 0;">Dashboard Interativo: Risco de Atropelamento</h1>
+        <h1 style="color: white; font-size: 48px; margin: 0;">Dashboard Interativo: Risco de Atropelamento</h1>
     </div>
     """,
     unsafe_allow_html=True
@@ -55,7 +55,7 @@ st.markdown(
 
     h1 {
         color: white !important;
-        font-size: 36px !important; /* Tamanho maior do título */
+        font-size: 48px !important; /* Tamanho maior do título */
         font-weight: bold;
         text-align: center;
         margin: 0;
