@@ -25,22 +25,22 @@ st.markdown(
         background-color: #2F50C1 !important; /* Fundo azul da página */
     }
 
-    /* Header e logo */
+    /* Header e título principal */
     header {
         background-color: #2F50C1 !important;
         display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 20px 0;
+        justify-content: space-between;
+        padding: 10px 20px;
     }
     header img {
-        max-width: 100px;
-        margin-right: 10px;
+        max-height: 50px;
     }
     header h1 {
         color: white !important;
         font-size: 24px;
         font-weight: bold;
+        margin: 0;
     }
 
     /* Área do mapa e gráfico */
@@ -48,11 +48,9 @@ st.markdown(
         background-color: white !important;
         border-radius: 10px;
         padding: 20px;
-        margin: 20px;
+        margin: 20px auto;
         width: 90%;
         max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
     }
 
     /* Subtítulo "Mapa Interativo" */
@@ -67,6 +65,22 @@ st.markdown(
         border-radius: 5px;
     }
 
+    /* Estilo das abas */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: #2F50C1 !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: white !important;
+        color: #2F50C1 !important;
+        font-weight: bold !important;
+        border-radius: 5px 5px 0 0 !important;
+        padding: 10px !important;
+    }
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {
+        background-color: #2F50C1 !important;
+        color: white !important;
+    }
+
     /* Botões de seleção ("Selecionar todos") */
     .st-multi-select-box > div > div > div[data-testid="stTag"] {
         background-color: #2F50C1 !important;
@@ -76,6 +90,19 @@ st.markdown(
     }
     .st-multi-select-box > div > div > div[data-testid="stTag"] svg {
         fill: white !important;
+    }
+
+    /* Texto no select box e áreas urbanas */
+    .stSelectbox div, .stRadio div {
+        color: #2F50C1 !important;
+        font-weight: bold !important;
+    }
+
+    /* Inputs e caixas de seleção */
+    div[data-baseweb="select"], div[data-baseweb="input"] {
+        border: 2px solid #2F50C1 !important;
+        border-radius: 5px !important;
+        padding: 5px !important;
     }
 
     /* Sidebar */
@@ -88,23 +115,17 @@ st.markdown(
         font-weight: bold !important;
     }
 
-    /* Inputs e caixas de seleção */
-    div[data-baseweb="select"], div[data-baseweb="input"] {
-        border: 2px solid #2F50C1 !important;
-        border-radius: 5px !important;
-        padding: 5px !important;
-    }
-
     /* Hover nos botões */
     button:hover {
         background-color: #1E3C91 !important;
         color: white !important;
     }
 
-    /* Ajuste de mapa */
+    /* Ajuste no iframe do mapa */
     iframe {
         width: 100% !important;
-        height: 600px !important;
+        height: 700px !important;
+        border-radius: 10px !important;
     }
     </style>
     """,
