@@ -93,19 +93,23 @@ st.markdown(
         color: white !important;
     }
 
-        /* Ajuste no botão "Selecionar todos" */
+    /* Ajuste no botão "Selecionar todos" para exibir o texto completo */
     span.st-bp {
         background-color: #2F50C1 !important; /* Fundo azul */
         color: white !important; /* Texto branco */
         font-weight: bold !important; /* Texto em negrito */
         border-radius: 5px !important; /* Cantos arredondados */
-        padding: 5px 10px !important; /* Espaçamento interno */
+        padding: 5px 15px !important; /* Espaçamento interno */
+        white-space: nowrap !important; /* Evita quebra de linha */
+        overflow: visible !important; /* Permite que o texto fique visível */
+        text-overflow: clip !important; /* Remove os "..." no texto */
     }
 
     /* Texto dentro do botão "Selecionar todos" */
     span.st-bp > span {
         color: white !important; /* Texto branco */
         font-weight: bold !important; /* Texto em negrito */
+        white-space: nowrap !important; /* Garante que o texto não quebre */
     }
 
     /* Ícone "Delete" no botão */
@@ -123,6 +127,7 @@ st.markdown(
     span.st-bp svg:hover {
         fill: #1E3C91 !important; /* Ícone azul mais escuro no hover */
     }
+
 
     /* Ajuste adicional para a borda dos botões */
     .st-multi-select-box > div {
