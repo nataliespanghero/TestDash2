@@ -3,25 +3,24 @@
 
 /* Aplicando a fonte globalmente, exceto em elementos específicos */
 html, body, [class*="css"] {
-    font-family: 'Exo', sans-serif !important; /* Fonte global */
-    font-size: 18px; /* Tamanho do texto base */
-    font-weight: 400; /* Regular */
-    color: #091747; /* Cor do texto */
+    font-family: 'Exo', sans-serif !important;
+    font-size: 18px; /* Ajuste conforme necessário */
+    color: #091747;
 }
 
 /* Estilo para títulos */
 h1 {
-    font-family: 'Exo', sans-serif !important; /* Fonte para o título */
-    font-size: 48px; /* Tamanho do título principal */
+    font-family: 'Exo', sans-serif !important;
+    font-size: 48px;
     font-weight: 700; /* Negrito */
-    color: white !important; /* Cor branca */
+    color: white !important;
 }
 
 h2 {
-    font-family: 'Exo', sans-serif !important; /* Fonte para subtítulos */
-    font-size: 36px; /* Tamanho do subtítulo */
+    font-family: 'Exo', sans-serif !important;
+    font-size: 24px;
     font-weight: 700; /* Negrito */
-    color: #2F50C1 !important; /* Azul */
+    color: #2F50C1 !important;
 }
 
 /* Estilo específico para abas */
