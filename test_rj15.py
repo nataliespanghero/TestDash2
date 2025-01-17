@@ -43,8 +43,6 @@ st.markdown(
         font-size: 24px;
         font-weight: bold;
         text-align: center;
-        background-color: #2F50C1 !important;
-        padding: 10px;
         margin: 0;
     }
 
@@ -55,6 +53,9 @@ st.markdown(
         font-weight: bold;
         text-align: left;
         margin-bottom: 10px;
+        background-color: white !important; /* Fundo branco para o título */
+        padding: 10px;
+        border-radius: 5px;
     }
 
     /* Estilo das abas */
