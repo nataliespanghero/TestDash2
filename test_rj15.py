@@ -7,6 +7,7 @@ from folium.plugins import Draw
 from shapely.geometry import shape, box
 from streamlit_folium import st_folium
 import plotly.graph_objects as go
+from folium.plugins import MiniMap
 
 # Configuração do Streamlit
 st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
@@ -221,6 +222,7 @@ with tabs[0]:
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)
     draw.add_to(m)
+    MiniMap(toggle_display=True).add_to(m)
 
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
