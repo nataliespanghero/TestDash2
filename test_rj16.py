@@ -9,6 +9,10 @@ from streamlit_folium import st_folium
 import plotly.graph_objects as go
 from folium.plugins import MiniMap
 
+# Importar o arquivo CSS para o Streamlit
+with open("style.css") as css_file:
+    st.markdown(f'<style>{css_file.read()}</style>', unsafe_allow_html=True)
+
 # Configuração do Streamlit
 st.set_page_config(page_title="Dashboard Interativo - Risco de Atropelamento", layout="wide")
 
