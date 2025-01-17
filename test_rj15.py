@@ -198,6 +198,12 @@ st.markdown(
         border-radius: 10px;
         border: none; /* Remove bordas adicionais */
     }
+
+    iframe.st-emotion-cache-1tvzk6f {
+        height: auto !important; /* Ajusta automaticamente a altura ao conteúdo */
+        margin-bottom: 0 !important; /* Remove qualquer margem inferior */
+    }
+    
     </style>
     """,
     unsafe_allow_html=True
