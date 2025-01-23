@@ -32,15 +32,7 @@ st.markdown(
 st.markdown(
     """
     <style>
-    @font-face {
-        font-family: 'Exo-Regular';
-        src: url('Exo-Regular.otf') format('opentype');
-    }
-    @font-face {
-        font-family: 'Exo-Bold';
-        src: url('Exo-Bold.otf') format('opentype');
-    }
-    
+        
     /* Estilo global */
     * {
         font-family: 'Exo-Regular', sans-serif !important;
