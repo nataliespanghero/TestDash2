@@ -166,7 +166,7 @@ st.markdown(
 
     /* Texto no select box e áreas urbanas */
     .stSelectbox div, .stRadio div {
-        color: #2F50C1 !important;
+        color: ##0F2355 !important;
         font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
         font-weight: bold !important; /* Texto em negrito */
     }
@@ -374,14 +374,14 @@ with tabs[1]:
         ))
 
     fig.update_layout(
-        title=dict(text=f"Distribuição de Risco ({tipo_risco})", font=dict(color="#2F50C1")),
+        title=dict(text=f"Distribuição de Risco ({tipo_risco})", font=dict(color="#0F2355")),
         xaxis_title="Categoria de Risco",
         yaxis_title="% em Hexágonos",
-        xaxis=dict(title=dict(font=dict(color='#2F50C1')), tickfont=dict(color='#2F50C1')),
-        yaxis=dict(title=dict(font=dict(color='#2F50C1')), tickfont=dict(color='#2F50C1')),
+        xaxis=dict(title=dict(font=dict(color='#0F2355')), tickfont=dict(color='#0F2355')),
+        yaxis=dict(title=dict(font=dict(color='#0F2355')), tickfont=dict(color='#0F2355')),
         autosize=True,
         barmode="group",
-        legend=dict(title=dict(font=dict(color='#2F50C1')), font=dict(color='#2F50C1'))
+        legend=dict(title=dict(font=dict(color='#0F2355')), font=dict(color='#0F2355'))
     )
 
     st.plotly_chart(fig, use_container_width=True)
