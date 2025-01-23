@@ -303,6 +303,9 @@ with tabs[0]:
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
+    # Capturar interações e desenhos do mapa
+    map_data = st_folium(m, width=None, height=600)
+
     if usar_filtro_coordenadas:
         hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
 
