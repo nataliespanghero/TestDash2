@@ -35,7 +35,7 @@ st.markdown(
         
     /* Estilo global */
     * {
-        font-family: 'Exo-Regular', sans-serif !important;
+        font-family: 'Exo', sans-serif !important;
     }
     .stApp {
         background-color: #0F2355 !important; /* Fundo azul da página */
@@ -49,7 +49,7 @@ st.markdown(
     h1 {
         color: white !important;
         font-size: 48px !important; /* Tamanho maior do título */
-        font-family: 'Exo-Bold', sans-serif !important; /* Aplicar Exo-Bold ao título */
+        font-family: 'Exo', sans-serif !important; /* Aplicar Exo ao título */
         text-align: flex-start;
         margin: 0;
     }
@@ -85,7 +85,7 @@ st.markdown(
     h2 {
         color: #0F2355 !important;
         font-size: 24px;
-        font-family: 'Exo-Regular', sans-serif !important; /* Garantir uso da fonte Exo-Regular */
+        font-family: 'Exo', sans-serif !important; /* Garantir uso da fonte Exo */
         font-weight: bold;
         text-align: left;
         margin-bottom: 10px;
@@ -128,7 +128,7 @@ st.markdown(
     span.st-bp {
         background-color: #0F2355 !important; /* Fundo azul */
         color: white !important; /* Texto branco */
-        font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
+        font-family: 'Exo', sans-serif !important; /* Fonte negrito no botão */
         font-weight: bold !important; /* Texto em negrito */
         border-radius: 5px !important; /* Cantos arredondados */
         padding: 5px 20px !important; /* Aumenta o espaço interno */
@@ -141,7 +141,7 @@ st.markdown(
     /* Texto dentro do botão "Selecionar todos" */
     span.st-bp > span {
         color: white !important; /* Texto branco */
-        font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
+        font-family: 'Exo', sans-serif !important; /* Fonte negrito no botão */
         font-weight: bold !important; /* Texto em negrito */
         white-space: nowrap !important; /* Garante que o texto não quebre */
         text-overflow: unset !important; /* Remove os "..." */
@@ -173,7 +173,7 @@ st.markdown(
     /* Texto no select box e áreas urbanas */
     .stSelectbox div, .stRadio div {
         color: ##0F2355 !important;
-        font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
+        font-family: 'Exo', sans-serif !important; /* Fonte negrito no botão */
         font-weight: bold !important; /* Texto em negrito */
     }
 
@@ -191,7 +191,7 @@ st.markdown(
     }
     section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] label {
         color: #0F2355 !important;
-        font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
+        font-family: 'Exo', sans-serif !important; /* Fonte negrito no botão */
         font-weight: bold !important; /* Texto em negrito */
     }
 
