@@ -319,6 +319,16 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
+    # Verificar se o usuário desenhou algo
+    if map_data and "all_drawings" in map_data:
+        desenhos = map_data.get("all_drawings", [])
+        if desenhos:
+            # Capturar a última geometria desenhada pelo usuário
+            ultima_geometria = shape(desenhos[-1]["geometry"])
+
+            # Aplicar o filtro por desenho
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(ultima_geometria)]
+
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -354,61 +364,8 @@ with tabs[0]:
     LayerControl().add_to(m)
 
     # Renderizar o mapa inicial
-    map_data = st_folium(m, width=None, height=600)
-
-    # Aplicar filtro por desenho
-    if map_data and "all_drawings" in map_data:
-        desenhos = map_data.get("all_drawings", [])
-        if desenhos:
-            # Capturar a última geometria desenhada pelo usuário
-            ultima_geometria = shape(desenhos[-1]["geometry"])
-
-            # Aplicar filtro nos hexágonos já filtrados anteriormente
-            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(ultima_geometria)]
-
-            # Atualizar o mapa com os hexágonos filtrados
-            m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
-            draw.add_to(m)  # Reaplicar o plugin de desenho
-            MiniMap(toggle_display=True).add_to(m)
-
-            # Atualizar o mapa apenas se houver hexágonos filtrados
-            if not hexagonos_filtrados.empty:
-                Choropleth(
-                    geo_data=hexagonos_filtrados,
-                    data=hexagonos_filtrados,
-                    columns=["index", coluna_risco_rounded],
-                    key_on="feature.properties.index",
-                    fill_color="RdYlGn_r",
-                    fill_opacity=0.6,
-                    line_opacity=0.2,
-                    legend_name=f"Risco Médio ({tipo_risco})",
-                    name="Hexágonos Filtrados",
-                    highlight=True,
-                ).add_to(m)
-
-                folium.GeoJson(
-                    hexagonos_filtrados,
-                    name="Hexágonos Filtrados",
-                    style_function=lambda x: {
-                        'color': 'lightgray',
-                        'weight': 0.3,
-                        'fillOpacity': 0
-                    },
-                    tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
-                ).add_to(m)
-
-            if show_areas_urbanas == "Mostrar":
-                folium.GeoJson(
-                    areas_urbanas,
-                    name="Áreas Urbanas",
-                    style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
-                ).add_to(m)
-
-            LayerControl().add_to(m)
-
-            # Renderizar o mapa atualizado
-            map_data = st_folium(m, width=None, height=600)
-        
+    st_folium(m, width=None, height=600)
+   
 # Aba 2: Gráfico
 with tabs[1]:
     st.header("Gráfico de Riscos")
