@@ -21,7 +21,7 @@ st.sidebar.image("logo.png", width=130)
 
 st.markdown(
     """
-    <div style="display: flex; align-items: flex-start; justify-content: flex-start; background-color: #2F50C1; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+    <div style="display: flex; align-items: flex-start; justify-content: flex-start; background-color: #0F2355; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
         <h1 style="color: white; font-size: 48px; margin: 0;">Dashboard Interativo: Risco de Atropelamento</h1>
     </div>
     """,
@@ -46,12 +46,12 @@ st.markdown(
         font-family: 'Exo-Regular', sans-serif !important;
     }
     .stApp {
-        background-color: #2F50C1 !important; /* Fundo azul da página */
+        background-color: #0F2355 !important; /* Fundo azul da página */
     }
 
     /* Header e título principal */
     header {
-        background-color: #2F50C1 !important;
+        background-color: #0F2355 !important;
     }
 
     h1 {
@@ -91,7 +91,7 @@ st.markdown(
     
     /* Subtítulo "Mapa Interativo" */
     h2 {
-        color: #2F50C1 !important;
+        color: #0F2355 !important;
         font-size: 24px;
         font-family: 'Exo-Regular', sans-serif !important; /* Garantir uso da fonte Exo-Regular */
         font-weight: bold;
@@ -104,23 +104,23 @@ st.markdown(
 
     /* Estilo das abas */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: #2F50C1 !important;
+        background-color: #0F2355 !important;
     }
     .stTabs [data-baseweb="tab"] {
         background-color: white !important;
-        color: #2F50C1 !important;
+        color: #0F2355 !important;
         font-weight: bold !important;
         border-radius: 5px 5px 0 0 !important;
         padding: 10px !important;
     }
     .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background-color: #2F50C1 !important;
+        background-color: #0F2355 !important;
         color: white !important;
     }
 
     /* Ajuste no botão "Selecionar todos" para exibir o texto completo */
     span.st-bp {
-        background-color: #2F50C1 !important; /* Fundo azul */
+        background-color: #0F2355 !important; /* Fundo azul */
         color: white !important; /* Texto branco */
         font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
         font-weight: bold !important; /* Texto em negrito */
@@ -149,18 +149,18 @@ st.markdown(
 
     /* Hover no botão "Selecionar todos" */
     span.st-bp:hover {
-        background-color: #1E3C91 !important; /* Azul mais escuro no hover */
+        background-color: #0F2355 !important; /* Azul mais escuro no hover */
         color: white !important;
     }
 
     /* Hover no ícone "Delete" */
     span.st-bp svg:hover {
-        fill: #1E3C91 !important; /* Ícone azul mais escuro no hover */
+        fill: #0F2355 !important; /* Ícone azul mais escuro no hover */
     }
 
     /* Ajuste adicional para a borda dos botões */
     .st-multi-select-box > div {
-        border: 2px solid #2F50C1 !important;
+        border: 2px solid #0F2355 !important;
         border-radius: 5px !important;
     }
 
@@ -173,7 +173,7 @@ st.markdown(
 
     /* Inputs e caixas de seleção */
     div[data-baseweb="select"], div[data-baseweb="input"] {
-        border: 2px solid #2F50C1 !important;
+        border: 2px solid #0F2355 !important;
         border-radius: 5px !important;
         padding: 5px !important;
     }
@@ -181,17 +181,17 @@ st.markdown(
     /* Sidebar */
     section[data-testid="stSidebar"] {
         background-color: white !important;
-        color: #2F50C1 !important;
+        color: #0F2355 !important;
     }
     section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] label {
-        color: #2F50C1 !important;
+        color: #0F2355 !important;
         font-family: 'Exo-Bold', sans-serif !important; /* Fonte negrito no botão */
         font-weight: bold !important; /* Texto em negrito */
     }
 
     /* Hover nos botões */
     button:hover {
-        background-color: #1E3C91 !important;
+        background-color: #0F2355 !important;
         color: white !important;
     }
 
