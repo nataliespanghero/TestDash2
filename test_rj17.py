@@ -303,9 +303,6 @@ with tabs[0]:
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
-    # Capturar interações e desenhos do mapa
-    map_data = st_folium(m, width=None, height=600)
-
     if usar_filtro_coordenadas:
         hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(bbox)]
 
@@ -323,8 +320,8 @@ with tabs[0]:
             ]
 
     # Verificar se o usuário desenhou algo
-    if map_data and "all_drawings" in map_data:
-        desenhos = map_data.get("all_drawings", [])
+    if "all_drawings" in st.session_state:
+        desenhos = st.session_state.get("all_drawings", [])
         if desenhos:
             # Capturar a última geometria desenhada pelo usuário
             ultima_geometria = shape(desenhos[-1]["geometry"])
@@ -366,8 +363,12 @@ with tabs[0]:
 
     LayerControl().add_to(m)
 
-    # Renderizar o mapa inicial
-    st_folium(m, width=None, height=600)
+    # Renderizar o mapa final com todos os filtros aplicados (somente uma vez)
+    map_data = st_folium(m, width=None, height=600)
+
+    # Armazenar desenhos na sessão para reutilização
+    if map_data and "all_drawings" in map_data:
+        st.session_state["all_drawings"] = map_data["all_drawings"]
    
 # Aba 2: Gráfico
 with tabs[1]:
