@@ -408,8 +408,9 @@ with tabs[0]:
                 st_folium(m, width=None, height=600)
 
     else:
-    st.warning("Não foi possível obter os desenhos. Certifique-se de que a ferramenta de desenho está funcionando corretamente.")
-
+        # Mensagem de aviso se não houver desenhos ou erro ao capturar dados do mapa
+        st.warning("Não foi possível obter os desenhos. Certifique-se de que a ferramenta de desenho está funcionando corretamente.")
+        
 # Aba 2: Gráfico
 with tabs[1]:
     st.header("Gráfico de Riscos")
