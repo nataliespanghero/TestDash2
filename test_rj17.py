@@ -296,10 +296,23 @@ with tabs[0]:
 
     # Inicializar mapa
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
-    draw = Draw(export=True)
+    draw = Draw(export=True, show=False)
     draw.add_to(m)
     MiniMap(toggle_display=True).add_to(m)
 
+    # Renderizar o mapa e capturar as interações do usuário
+    map_data = st_folium(m, width=None, height=600)
+
+    # Verificar se o usuário desenhou algo no mapa
+    if map_data and "all_drawings" in map_data:
+        desenhos = map_data["all_drawings"]
+        if desenhos:
+            # Pegar a última geometria desenhada pelo usuário
+            ultima_geometria = shape(desenhos[-1]["geometry"])
+        
+            # Filtrar hexágonos que intersectam com a geometria desenhada
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(ultima_geometria)]
+    
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
