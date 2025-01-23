@@ -300,9 +300,6 @@ with tabs[0]:
     draw.add_to(m)
     MiniMap(toggle_display=True).add_to(m)
 
-    # Renderizar o mapa inicial e capturar interações
-    map_data = st_folium(m, width=None, height=600)
-    
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
@@ -321,6 +318,9 @@ with tabs[0]:
             hexagonos_filtrados = hexagonos_filtrados[
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
+
+    # Capturar interações do mapa e verificar desenhos do usuário
+    map_data = st_folium(m, width=None, height=600)
 
     # Verificar se o usuário desenhou algo
     if map_data and "all_drawings" in map_data:
