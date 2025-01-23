@@ -363,12 +363,9 @@ with tabs[0]:
 
     LayerControl().add_to(m)
 
-    # Renderizar o mapa final com todos os filtros aplicados (somente uma vez)
-    map_data = st_folium(m, width=None, height=600)
-
-    # Armazenar desenhos na sessão para reutilização
-    if map_data and "all_drawings" in map_data:
-        st.session_state["all_drawings"] = map_data["all_drawings"]
+    # Renderizar o mapa final (apenas uma vez)
+    st.session_state["all_drawings"] = desenhos  # Armazenar desenhos na sessão
+    st_folium(m, width=None, height=600)
    
 # Aba 2: Gráfico
 with tabs[1]:
