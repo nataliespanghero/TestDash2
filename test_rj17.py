@@ -104,18 +104,21 @@ st.markdown(
 
     /* Estilo das abas */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: #0F2355 !important;
+        background-color: white !important; /* Fundo geral da lista de abas */
     }
+
     .stTabs [data-baseweb="tab"] {
-        background-color: white !important;
-        color: #0F2355 !important;
+        background-color: #0F2355 !important; /* Fundo azul para abas não selecionadas */
+        color: white !important; /* Texto branco para abas não selecionadas */
         font-weight: bold !important;
         border-radius: 5px 5px 0 0 !important;
         padding: 10px !important;
     }
+
     .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background-color: #0F2355 !important;
-        color: white !important;
+        background-color: white !important; /* Fundo branco para a aba selecionada */
+        color: #0F2355 !important; /* Texto azul para a aba selecionada */
+        font-weight: bold !important;
     }
 
     /* Ajuste no botão "Selecionar todos" para exibir o texto completo */
