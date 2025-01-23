@@ -5,7 +5,7 @@
 html, body, [class*="css"] {
     font-family: 'Exo', sans-serif !important;
     font-size: 18px; /* Ajuste conforme necessário */
-    color: #091747;
+    color: #0F2355;
 }
 
 /* Estilo para títulos */
@@ -20,7 +20,7 @@ h2 {
     font-family: 'Exo', sans-serif !important;
     font-size: 24px;
     font-weight: 700; /* Negrito */
-    color: #2F50C1 !important;
+    color: #0F2355 !important;
 }
 
 /* Estilo específico para abas */
@@ -28,19 +28,19 @@ h2 {
     font-family: 'Exo', sans-serif !important; /* Fonte para abas */
     font-size: 16px !important; /* Tamanho ajustado */
     font-weight: 700 !important; /* Negrito */
-    color: #2F50C1 !important; /* Azul */
+    color: #0F2355 !important; /* Azul */
     background-color: white !important; /* Fundo branco */
     border-radius: 5px 5px 0 0 !important;
     padding: 10px !important;
 }
 
 .stTabs [data-baseweb="tab"][aria-selected="true"] {
-    background-color: #2F50C1 !important; /* Fundo azul ao selecionar */
+    background-color: #0F2355 !important; /* Fundo azul ao selecionar */
     color: white !important; /* Texto branco */
 }
 
 /* Restaurando a cor global sem afetar as abas */
 [class*="css"]:not([data-baseweb="tab"]) {
-    color: #091747 !important; /* Cor padrão para texto */
+    color: #0F2355 !important; /* Cor padrão para texto */
 }
 
