@@ -299,6 +299,9 @@ with tabs[0]:
     draw = Draw(export=True)
     draw.add_to(m)
     MiniMap(toggle_display=True).add_to(m)
+
+    # Renderizar o mapa inicial e capturar interações
+    map_data = st_folium(m, width=None, height=600)
     
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
