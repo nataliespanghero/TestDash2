@@ -319,9 +319,6 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
-    # Capturar interações do mapa e verificar desenhos do usuário
-    map_data = st_folium(m, width=None, height=600)
-
     # Verificar se o usuário desenhou algo
     if map_data and "all_drawings" in map_data:
         desenhos = map_data.get("all_drawings", [])
