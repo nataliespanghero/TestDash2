@@ -321,7 +321,7 @@ with tabs[0]:
 
     # Verificar se o usuário desenhou algo
     if "all_drawings" in st.session_state:
-        desenhos = st.session_state.get("all_drawings", [])
+        desenhos = st.session_state.get("all_drawings")
         if desenhos:
             # Capturar a última geometria desenhada pelo usuário
             ultima_geometria = shape(desenhos[-1]["geometry"])
@@ -364,8 +364,11 @@ with tabs[0]:
     LayerControl().add_to(m)
 
     # Renderizar o mapa final (apenas uma vez)
-    st.session_state["all_drawings"] = desenhos  # Armazenar desenhos na sessão
-    st_folium(m, width=None, height=600)
+    map_data = st_folium(m, width=None, height=600)  # Chamada única e definitiva
+
+    # Atualizar os desenhos na sessão com base na interação do usuário
+    if map_data and "all_drawings" in map_data:
+        st.session_state["all_drawings"] = map_data["all_drawings"]
    
 # Aba 2: Gráfico
 with tabs[1]:
