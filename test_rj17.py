@@ -358,7 +358,7 @@ with tabs[0]:
 
     # Aplicar filtro por desenho
     if map_data and "all_drawings" in map_data:
-        desenhos = map_data["all_drawings"]
+        desenhos = map_data["all_drawings", []]
         if desenhos:
             # Capturar a última geometria desenhada pelo usuário
             ultima_geometria = shape(desenhos[-1]["geometry"])
@@ -405,7 +405,7 @@ with tabs[0]:
                 LayerControl().add_to(m)
 
                 # Renderizar o mapa atualizado
-                st_folium(m, width=None, height=600)
+                map_data = st_folium(m, width=None, height=600)
 
     else:
         # Mensagem de aviso se não houver desenhos ou erro ao capturar dados do mapa
