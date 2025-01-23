@@ -402,7 +402,7 @@ with tabs[0]:
     LayerControl().add_to(m)
 
     # Renderizar o mapa atualizado
-    st_folium(m, width=None, height=600)
+    map_data = st_folium(m, width=None, height=600)
         
 # Aba 2: Gráfico
 with tabs[1]:
