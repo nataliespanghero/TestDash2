@@ -354,7 +354,7 @@ with tabs[0]:
         LayerControl().add_to(m)
 
     # Renderizar o mapa inicial
-    st_folium(m, width=None, height=600)
+    map_data = st_folium(m, width=None, height=600)
 
     # Aplicar filtro por desenho
     if map_data and "all_drawings" in map_data:
@@ -405,7 +405,10 @@ with tabs[0]:
                 LayerControl().add_to(m)
 
                 # Renderizar o mapa atualizado
-                map_data = st_folium(m, width=None, height=600)
+                st_folium(m, width=None, height=600)
+
+    else:
+    st.warning("Não foi possível obter os desenhos. Certifique-se de que a ferramenta de desenho está funcionando corretamente.")
 
 # Aba 2: Gráfico
 with tabs[1]:
