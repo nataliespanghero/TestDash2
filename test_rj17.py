@@ -104,7 +104,8 @@ st.markdown(
 
     /* Estilo das abas */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: white !important; /* Fundo geral da lista de abas */
+        background-color: #0F2355 !important; /* Fundo azul geral das abas */
+        border-bottom: none !important; /* Remove borda inferior, se houver */
     }
 
     .stTabs [data-baseweb="tab"] {
@@ -113,13 +114,23 @@ st.markdown(
         font-weight: bold !important;
         border-radius: 5px 5px 0 0 !important;
         padding: 10px !important;
+        border: none !important; /* Remove borda ao redor das abas */
     }
 
     .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background-color: white !important; /* Fundo branco para a aba selecionada */
-        color: #0F2355 !important; /* Texto azul para a aba selecionada */
+        background-color: white !important; /* Fundo branco para aba selecionada */
+        color: #0F2355 !important; /* Texto azul para aba selecionada */
         font-weight: bold !important;
+        border-top: 2px solid #0F2355 !important; /* Adiciona borda superior azul */
+        border-left: 2px solid #0F2355 !important;
+        border-right: 2px solid #0F2355 !important;
+        border-radius: 5px 5px 0 0 !important; /* Ajusta borda para encaixar visualmente */
     }
+
+    .stTabs [data-baseweb="tab"][aria-selected="false"] {
+        border: none !important; /* Remove borda das abas não selecionadas */
+    }
+
 
     /* Ajuste no botão "Selecionar todos" para exibir o texto completo */
     span.st-bp {
