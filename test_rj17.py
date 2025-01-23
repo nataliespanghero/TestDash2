@@ -358,7 +358,7 @@ with tabs[0]:
 
     # Aplicar filtro por desenho
     if map_data and "all_drawings" in map_data:
-        desenhos = map_data.get["all_drawings", []]
+        desenhos = map_data.get("all_drawings", [])
         if desenhos:
             # Capturar a última geometria desenhada pelo usuário
             ultima_geometria = shape(desenhos[-1]["geometry"])
