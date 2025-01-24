@@ -301,6 +301,7 @@ with tabs[0]:
         st.session_state["map_zoom"] = 8  # Zoom padrão inicial
     if "all_drawings" not in st.session_state:
         st.session_state["all_drawings"] = []  # Inicializar desenhos como lista vazia
+    desenhos = st.session_state.get("all_drawings", [])  # Recuperar desenhos
         
     # Inicializar mapa
     m = folium.Map(
