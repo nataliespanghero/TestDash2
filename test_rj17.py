@@ -321,7 +321,7 @@ with tabs[0]:
 
     # Verificar se o usuário desenhou algo
     if "all_drawings" in st.session_state:
-        desenhos = st.session_state.get("all_drawings")
+        desenhos = st.session_state.get("all_drawings", [])
         if desenhos:
             # Capturar a última geometria desenhada pelo usuário
             ultima_geometria = shape(desenhos[-1]["geometry"])
