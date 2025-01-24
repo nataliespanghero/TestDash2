@@ -294,6 +294,10 @@ if pair_1:
 with tabs[0]:
     st.header("Mapa Interativo")
 
+    # Inicializar o mapa com estado salvo de posição e zoom
+    map_center = st.session_state.get("map_center", [-22.90, -43.20])  # Posição padrão inicial
+    map_zoom = st.session_state.get("map_zoom", 8)  # Zoom padrão inicial
+    
     # Inicializar mapa
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)
@@ -366,9 +370,15 @@ with tabs[0]:
     # Renderizar o mapa final (apenas uma vez)
     map_data = st_folium(m, width=None, height=600)  # Chamada única e definitiva
 
-    # Atualizar os desenhos na sessão com base na interação do usuário
-    if map_data and "all_drawings" in map_data:
-        st.session_state["all_drawings"] = map_data["all_drawings"]
+    # Atualizar desenhos e estado do mapa na sessão
+    if map_data:
+        # Capturar interações de zoom e posição
+        st.session_state["map_center"] = map_data["center"]
+        st.session_state["map_zoom"] = map_data["zoom"]
+
+        # Capturar novos desenhos, se houver
+        if "all_drawings" in map_data:
+            st.session_state["all_drawings"] = map_data["all_drawings"]
    
 # Aba 2: Gráfico
 with tabs[1]:
