@@ -300,7 +300,11 @@ with tabs[0]:
     desenhos = st.session_state["all_drawings"] = []  # Recuperar desenhos
         
     # Inicializar mapa
-    m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
+    m = folium.Map(
+        location=st.session_state["map_center"],
+        zoom_start=st.session_state["map_zoom"],
+        tiles="OpenStreetMap"
+    )
     draw = Draw(export=True)
     draw.add_to(m)
     MiniMap(toggle_display=True).add_to(m)
@@ -372,10 +376,11 @@ with tabs[0]:
 
     # Atualizar o estado da sessão com os dados do mapa
     if map_data:
-        st.session_state["map_center"] = map_data.get("center", map_center)
-        st.session_state["map_zoom"] = map_data.get("zoom", map_zoom)
+        # Atualizar centro e zoom
+        st.session_state["map_center"] = map_data.get("center", st.session_state["map_center"])
+        st.session_state["map_zoom"] = map_data.get("zoom", st.session_state["map_zoom"])
 
-        # Capturar novos desenhos
+        # Atualizar desenhos se houver novos
         novos_desenhos = map_data.get("all_drawings", [])
         if novos_desenhos != desenhos:  # Atualizar apenas se houver mudanças
             st.session_state["all_drawings"] = novos_desenhos
