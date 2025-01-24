@@ -295,9 +295,12 @@ with tabs[0]:
     st.header("Mapa Interativo")
 
     # Inicializar estado na sessão
-    map_center = st.session_state["map_center"] = [-22.90, -43.20]  # Centro padrão
-    map_zoom = st.session_state["map_zoom"] = 8  # Zoom padrão
-    desenhos = st.session_state["all_drawings"] = []  # Recuperar desenhos
+    if "map_center" not in st.session_state:
+        st.session_state["map_center"] = [-22.90, -43.20]  # Centro padrão
+    if "map_zoom" not in st.session_state:
+        st.session_state["map_zoom"] = 8  # Zoom padrão inicial
+    if "all_drawings" not in st.session_state:
+        st.session_state["all_drawings"] = []  # Inicializar desenhos como lista vazia
         
     # Inicializar mapa
     m = folium.Map(
@@ -381,9 +384,7 @@ with tabs[0]:
         st.session_state["map_zoom"] = map_data.get("zoom", st.session_state["map_zoom"])
 
         # Atualizar desenhos se houver novos
-        novos_desenhos = map_data.get("all_drawings", [])
-        if novos_desenhos != desenhos:  # Atualizar apenas se houver mudanças
-            st.session_state["all_drawings"] = novos_desenhos
+        st.session_state["all_drawings"] = map_data.get("all_drawings", [])
    
 # Aba 2: Gráfico
 with tabs[1]:
