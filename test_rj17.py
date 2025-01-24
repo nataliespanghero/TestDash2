@@ -324,8 +324,8 @@ with tabs[0]:
             ]
 
     # Verificar se o usuário desenhou algo
-    if "all_drawings" in st.session_state:
-        desenhos = st.session_state.get("all_drawings", [])
+    if map_data and "all_drawings" in map_data:
+        desenhos = map_data["all_drawings"]
         if desenhos:
             # Capturar a última geometria desenhada pelo usuário
             ultima_geometria = shape(desenhos[-1]["geometry"])
@@ -333,52 +333,55 @@ with tabs[0]:
             # Aplicar o filtro por desenho
             hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(ultima_geometria)]
 
-    if not hexagonos_filtrados.empty:
-        Choropleth(
-            geo_data=hexagonos_filtrados,
-            data=hexagonos_filtrados,
-            columns=["index", coluna_risco_rounded],
-            key_on="feature.properties.index",
-            fill_color="RdYlGn_r",
-            fill_opacity=0.6,
-            line_opacity=0.2,
-            legend_name=f"Risco Médio ({tipo_risco})",
-            name="Hexágonos Selecionados",
-            highlight=True,
-        ).add_to(m)
+             # Adicionar hexágonos filtrados ao mapa
+            m = folium.Map(location=map_center, zoom_start=map_zoom, tiles="OpenStreetMap")
+            draw.add_to(m)  # Adicionar ferramenta de desenho novamente
+            MiniMap(toggle_display=True).add_to(m)
 
-        folium.GeoJson(
-            hexagonos_filtrados,
-            name="Hexágonos",
-            style_function=lambda x: {
-                'color': 'lightgray',
-                'weight': 0.3,
-                'fillOpacity': 0
-            },
-            tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
-        ).add_to(m)
+            if not hexagonos_filtrados.empty:
+                 Choropleth(
+                    geo_data=hexagonos_filtrados,
+                    data=hexagonos_filtrados,
+                    columns=["index", coluna_risco_rounded],
+                    key_on="feature.properties.index",
+                    fill_color="RdYlGn_r",
+                    fill_opacity=0.6,
+                    line_opacity=0.2,
+                    legend_name=f"Risco Médio ({tipo_risco})",
+                    name="Hexágonos Selecionados",
+                    highlight=True,
+                ).add_to(m)
 
-        if show_areas_urbanas == "Mostrar":
-            folium.GeoJson(
-                areas_urbanas,
-                name="Áreas Urbanas",
-                style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
-            ).add_to(m)
+                folium.GeoJson(
+                    hexagonos_filtrados,
+                    name="Hexágonos",
+                    style_function=lambda x: {
+                        'color': 'lightgray',
+                        'weight': 0.3,
+                        'fillOpacity': 0
+                    },
+                    tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
+                ).add_to(m)
 
-    LayerControl().add_to(m)
+            if show_areas_urbanas == "Mostrar":
+                folium.GeoJson(
+                    areas_urbanas,
+                    name="Áreas Urbanas",
+                    style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
+                ).add_to(m)
 
-    # Renderizar o mapa final (apenas uma vez)
-    map_data = st_folium(m, width=None, height=600)  # Chamada única e definitiva
+            # Adicionar controle de camadas
+            LayerControl().add_to(m)
+
+            # Renderizar o mapa final (apenas uma vez)
+            map_data = st_folium(m, width=None, height=600)  # Chamada única e definitiva
 
     # Atualizar desenhos e estado do mapa na sessão
     if map_data:
         # Capturar interações de zoom e posição
         st.session_state["map_center"] = map_data["center"]
         st.session_state["map_zoom"] = map_data["zoom"]
-
-        # Capturar novos desenhos, se houver
-        if "all_drawings" in map_data:
-            st.session_state["all_drawings"] = map_data["all_drawings"]
+        st.session_state["all_drawings"] = map_data.get("all_drawings", [])
    
 # Aba 2: Gráfico
 with tabs[1]:
