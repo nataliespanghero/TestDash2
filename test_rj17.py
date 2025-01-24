@@ -294,12 +294,10 @@ if pair_1:
 with tabs[0]:
     st.header("Mapa Interativo")
 
-    if "map_center" not in st.session_state:
-        st.session_state["map_center"] = [-22.90, -43.20]  # Centro padrão
-    if "map_zoom" not in st.session_state:
-        st.session_state['map_zoom'] = 8  # Zoom padrão
-    if "all_drawings" not in st.session_state:
-        st.session_state['all_drawings'] = []
+    # Inicializar estado na sessão
+    map_center = st.session_state["map_center"] = [-22.90, -43.20]  # Centro padrão
+    map_zoom = st.session_state["map_zoom"] = 8  # Zoom padrão
+    desenhos = st.session_state["all_drawings"] = []  # Recuperar desenhos
         
     # Inicializar mapa
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
@@ -325,9 +323,6 @@ with tabs[0]:
             hexagonos_filtrados = hexagonos_filtrados[
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
-
-    # Capturar desenhos salvos na sessão
-    desenhos = st.session_state.get("all_drawings", [])  # Recuperar ou inicializar como lista vazia
 
     # Aplicar filtro por desenho, se houver
     if desenhos:
@@ -377,10 +372,13 @@ with tabs[0]:
 
     # Atualizar o estado da sessão com os dados do mapa
     if map_data:
-        st.session_state["map_center"] = map_data.get("center", st.session_state["map_center"])
-        st.session_state["map_zoom"] = map_data.get("zoom", st.session_state["map_zoom"])
-        if "all_drawings" in map_data:
-            st.session_state["all_drawings"] = map_data["all_drawings"]
+        st.session_state["map_center"] = map_data.get("center", map_center)
+        st.session_state["map_zoom"] = map_data.get("zoom", map_zoom)
+
+        # Capturar novos desenhos
+        novos_desenhos = map_data.get("all_drawings", [])
+        if novos_desenhos != desenhos:  # Atualizar apenas se houver mudanças
+            st.session_state["all_drawings"] = novos_desenhos
    
 # Aba 2: Gráfico
 with tabs[1]:
