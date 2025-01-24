@@ -295,17 +295,31 @@ with tabs[0]:
     st.header("Mapa Interativo")
 
     if "map_center" not in st.session_state:
-        st.session_state["map_center"] = [-22.90, -43.20]  # Centro padrão
+        st.session_state.get("map_center") = [-22.90, -43.20]  # Centro padrão
     if "map_zoom" not in st.session_state:
-        st.session_state["map_zoom"] = 8  # Zoom padrão
+        st.session_state.get("map_zoom") = 8  # Zoom padrão
     if "all_drawings" not in st.session_state:
-        st.session_state["all_drawings"] = []
+        st.session_state.get("all_drawings") = []
         
     # Inicializar mapa
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
     draw = Draw(export=True)
     draw.add_to(m)
     MiniMap(toggle_display=True).add_to(m)
+
+    # Adicionar os hexágonos iniciais ao mapa (antes dos filtros)
+    Choropleth(
+        geo_data=hexagonos_h3,
+        data=hexagonos_h3,
+        columns=["index", "risk_mean_KmP"],  # Ajuste conforme a sua tabela
+        key_on="feature.properties.index",
+        fill_color="RdYlGn_r",
+        fill_opacity=0.6,
+        line_opacity=0.2,
+        legend_name="Risco Médio Inicial",
+        name="Hexágonos Iniciais",
+        highlight=True,
+    ).add_to(m)
 
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
@@ -377,9 +391,10 @@ with tabs[0]:
 
     # Atualizar o estado da sessão com os dados do mapa
     if map_data:
-        st.session_state["map_center"] = map_data.get("center", st.session_state["map_center"])
-        st.session_state["map_zoom"] = map_data.get("zoom", st.session_state["map_zoom"])
-        st.session_state["all_drawings"] = map_data.get("all_drawings", [])
+        st.session_state.get("map_center") = map_data.get("center", st.session_state["map_center"])
+        st.session_state("map_zoom") = map_data.get("zoom", st.session_state["map_zoom"])
+        if "all_drawings" in map_data:
+        st.session_state("all_drawings") = map_data["all_drawings"]
    
 # Aba 2: Gráfico
 with tabs[1]:
