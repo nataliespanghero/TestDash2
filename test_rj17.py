@@ -295,11 +295,11 @@ with tabs[0]:
     st.header("Mapa Interativo")
 
     if "map_center" not in st.session_state:
-        st.session_state('map_center', [-22.90, -43.20])  # Centro padrão
+        st.session_state["map_center"] = [-22.90, -43.20]  # Centro padrão
     if "map_zoom" not in st.session_state:
-        st.session_state('map_zoom', 8)  # Zoom padrão
+        st.session_state['map_zoom'] = 8  # Zoom padrão
     if "all_drawings" not in st.session_state:
-        st.session_state('all_drawings', [])
+        st.session_state['all_drawings'] = []
         
     # Inicializar mapa
     m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
