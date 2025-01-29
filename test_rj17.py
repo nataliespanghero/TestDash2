@@ -302,7 +302,14 @@ with tabs[0]:
     if "all_drawings" not in st.session_state:
         st.session_state["all_drawings"] = []  # Inicializar desenhos como lista vazia
     desenhos = st.session_state.get("all_drawings", [])  # Recuperar desenhos
-        
+
+    # **🔹 Garantir que `map_center` esteja no formato correto (lista)**
+    if isinstance(st.session_state["map_center"], dict):  
+        st.session_state["map_center"] = [
+            st.session_state["map_center"].get("lat", -22.90),
+            st.session_state["map_center"].get("lng", -43.20)
+        ]
+    
     # Inicializar mapa
     m = folium.Map(
         location=st.session_state["map_center"],
