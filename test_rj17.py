@@ -341,11 +341,10 @@ with tabs[0]:
 
     # Aplicar filtro por desenho, se houver
     if desenhos:
-        # Capturar a última geometria desenhada pelo usuário
-        ultima_geometria = shape(desenhos[-1]["geometry"])
-        # Aplicar o filtro por desenho
-        hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(ultima_geometria)]
-
+        for desenho in desenhos:  # Garantir que todos os desenhos anteriores sejam considerados
+            geometria = shape(desenho["geometry"])
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geometria)]
+            
     # Adicionar hexágonos filtrados ao mapa
     if not hexagonos_filtrados.empty:
         Choropleth(
@@ -387,7 +386,7 @@ with tabs[0]:
 
     # Atualizar o estado da sessão com os dados do mapa
     if map_data:
-        # **🔹 Certificar-se de que `map_center` sempre seja uma lista**
+        # Garantir que `map_center` seja uma lista
         new_center = map_data.get("center", st.session_state["map_center"])
         if isinstance(new_center, dict):
             new_center = [new_center.get("lat", -22.90), new_center.get("lng", -43.20)]
@@ -396,8 +395,10 @@ with tabs[0]:
         # Atualizar zoom
         st.session_state["map_zoom"] = map_data.get("zoom", st.session_state["map_zoom"])
 
-        # Atualizar desenhos se houver novos
-        st.session_state["all_drawings"] = map_data.get("all_drawings", [])
+        # 🔹 **Manter TODOS os desenhos**
+        novos_desenhos = map_data.get("all_drawings", [])
+        if novos_desenhos:
+            st.session_state["all_drawings"] = novos_desenhos
    
 # Aba 2: Gráfico
 with tabs[1]:
