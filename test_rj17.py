@@ -387,8 +387,13 @@ with tabs[0]:
 
     # Atualizar o estado da sessão com os dados do mapa
     if map_data:
-        # Atualizar centro e zoom
-        st.session_state["map_center"] = map_data.get("center", st.session_state["map_center"])
+        # **🔹 Certificar-se de que `map_center` sempre seja uma lista**
+        new_center = map_data.get("center", st.session_state["map_center"])
+        if isinstance(new_center, dict):
+            new_center = [new_center.get("lat", -22.90), new_center.get("lng", -43.20)]
+        st.session_state["map_center"] = new_center
+
+        # Atualizar zoom
         st.session_state["map_zoom"] = map_data.get("zoom", st.session_state["map_zoom"])
 
         # Atualizar desenhos se houver novos
