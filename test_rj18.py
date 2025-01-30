@@ -293,11 +293,6 @@ if pair_1:
 # Aba 1: Mapa Interativo
 with tabs[0]:
     st.header("Mapa Interativo")
-
-    # Botão para resetar os desenhos
-    if st.button("Limpar Seleção"):
-        st.session_state["all_drawings"] = []  # Resetar desenhos
-        st.rerun()  # Recarregar o mapa sem filtros
     
     # Inicializar estado na sessão
     if "map_center" not in st.session_state:
@@ -388,6 +383,12 @@ with tabs[0]:
 
     # Renderizar o mapa final (apenas uma vez)
     map_data = st_folium(m, width=None, height=600)  # Chamada única e definitiva
+
+    # 🔄 Mover o botão para baixo
+    st.markdown("---")  # Adicionar uma linha separadora
+    if st.button("🗑️ Limpar Seleção", help="Clique para remover o desenho e restaurar os dados"):
+        st.session_state["all_drawings"] = []  # Resetar desenhos
+        st.rerun()  # Recarregar o mapa sem filtros
 
     # Atualizar o estado da sessão com os dados do mapa
     if map_data:
