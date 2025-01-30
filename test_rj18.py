@@ -386,7 +386,7 @@ with tabs[0]:
 
     # 🔄 Mover o botão para baixo
     st.markdown("---")  # Adicionar uma linha separadora
-    if st.button("🗑️ Limpar Seleção", help="Clique para remover o desenho e restaurar os dados"):
+    if st.button("🗑️ Limpar Desenho", help="Clique para remover o desenho e restaurar os dados"):
         st.session_state["all_drawings"] = []  # Resetar desenhos
         st.rerun()  # Recarregar o mapa sem filtros
 
