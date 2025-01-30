@@ -294,8 +294,33 @@ if pair_1:
 with tabs[0]:
     st.header("Mapa Interativo")
 
+    # Botão para resetar os desenhos
+    if st.button("Limpar Seleção"):
+        st.session_state["all_drawings"] = []  # Resetar desenhos
+        st.rerun()  # Recarregar o mapa sem filtros
+    
+    # Inicializar estado na sessão
+    if "map_center" not in st.session_state:
+        st.session_state["map_center"] = [-22.90, -43.20]  # Centro padrão
+    if "map_zoom" not in st.session_state:
+        st.session_state["map_zoom"] = 8  # Zoom padrão inicial
+    if "all_drawings" not in st.session_state:
+        st.session_state["all_drawings"] = []  # Inicializar desenhos como lista vazia
+    desenhos = st.session_state.get("all_drawings", [])  # Recuperar desenhos
+
+    # **🔹 Garantir que `map_center` esteja no formato correto (lista)**
+    if isinstance(st.session_state["map_center"], dict):  
+        st.session_state["map_center"] = [
+            st.session_state["map_center"].get("lat", -22.90),
+            st.session_state["map_center"].get("lng", -43.20)
+        ]
+    
     # Inicializar mapa
-    m = folium.Map(location=[-22.90, -43.20], zoom_start=8, tiles="OpenStreetMap")
+    m = folium.Map(
+        location=st.session_state["map_center"],
+        zoom_start=st.session_state["map_zoom"],
+        tiles="OpenStreetMap"
+    )
     draw = Draw(export=True)
     draw.add_to(m)
     MiniMap(toggle_display=True).add_to(m)
@@ -319,6 +344,13 @@ with tabs[0]:
                 hexagonos_filtrados.intersects(segmentos_filtrados.unary_union)
             ]
 
+    # Aplicar filtro por desenho, se houver
+    if desenhos:
+        for desenho in desenhos:  # Garantir que todos os desenhos anteriores sejam considerados
+            geometria = shape(desenho["geometry"])
+            hexagonos_filtrados = hexagonos_filtrados[hexagonos_filtrados.intersects(geometria)]
+            
+    # Adicionar hexágonos filtrados ao mapa
     if not hexagonos_filtrados.empty:
         Choropleth(
             geo_data=hexagonos_filtrados,
@@ -344,18 +376,35 @@ with tabs[0]:
             tooltip=GeoJsonTooltip(fields=[coluna_risco_rounded], aliases=['Risco:'], localize=True),
         ).add_to(m)
 
-        if show_areas_urbanas == "Mostrar":
-            folium.GeoJson(
-                areas_urbanas,
-                name="Áreas Urbanas",
-                style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
-            ).add_to(m)
+    if show_areas_urbanas == "Mostrar":
+        folium.GeoJson(
+            areas_urbanas,
+            name="Áreas Urbanas",
+            style_function=lambda x: {'color': 'gray', 'weight': 1, 'fillOpacity': 0.5},
+        ).add_to(m)
 
-        LayerControl().add_to(m)
+    # Adicionar controle de camadas
+    LayerControl().add_to(m)
 
-    # Renderizar o mapa final
-    st_folium(m, width=None, height=600)
+    # Renderizar o mapa final (apenas uma vez)
+    map_data = st_folium(m, width=None, height=600)  # Chamada única e definitiva
 
+    # Atualizar o estado da sessão com os dados do mapa
+    if map_data:
+        # Garantir que `map_center` seja uma lista
+        new_center = map_data.get("center", st.session_state["map_center"])
+        if isinstance(new_center, dict):
+            new_center = [new_center.get("lat", -22.90), new_center.get("lng", -43.20)]
+        st.session_state["map_center"] = new_center
+
+        # Atualizar zoom
+        st.session_state["map_zoom"] = map_data.get("zoom", st.session_state["map_zoom"])
+
+        # 🔹 **Manter TODOS os desenhos**
+        novos_desenhos = map_data.get("all_drawings", [])
+        if novos_desenhos:
+            st.session_state["all_drawings"] = novos_desenhos
+   
 # Aba 2: Gráfico
 with tabs[1]:
     st.header("Gráfico de Riscos")
