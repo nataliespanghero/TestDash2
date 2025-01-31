@@ -353,12 +353,12 @@ with tabs[0]:
     <button class="clear-button" onclick="clearDrawings()">🗑️ Limpar Desenho</button>
     """
 
-# Adicionar o botão ao mapa
-folium.Marker(
-    location=st.session_state["map_center"],
-    icon=folium.DivIcon(html=clear_button),
-    popup="Clique para limpar os desenhos",
-).add_to(m)
+    # Adicionar o botão ao mapa
+    folium.Marker(
+        location=st.session_state["map_center"],
+        icon=folium.DivIcon(html=clear_button),
+        popup="Clique para limpar os desenhos",
+    ).add_to(m)
   
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
