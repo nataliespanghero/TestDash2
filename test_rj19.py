@@ -320,42 +320,42 @@ with tabs[0]:
     draw.add_to(m)
     MiniMap(toggle_display=True).add_to(m)
 
-    # Criar um botão no mapa para limpar os desenhos
-    clear_button = """
-    <script>
-        function clearDrawings() {
-            var layers = document.querySelectorAll('.leaflet-interactive');
-            layers.forEach(layer => layer.remove());
-            window.parent.postMessage("clear_drawings", "*");
-        }
-    </script>
+    # Criar botão fixo para limpar desenhos
+    st.markdown(
+        """
+        <script>
+            function clearDrawings() {
+                var layers = document.querySelectorAll('.leaflet-interactive');
+                layers.forEach(layer => layer.remove());
+                window.parent.postMessage("clear_drawings", "*");
+            }
+        </script>
 
-    <style>
-        .clear-button {
-            position: absolute;
-            top: 10px;  /* Ajusta a posição mais para cima */
-            left: 50px; /* Ajusta a posição para ficar ao lado dos controles */
-            background: white;
-            color: black;
-            padding: 5px 10px; /* Ajusta tamanho */
-            font-size: 12px;
-            border: 1px solid #0F2355;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000; /* Mantém sobreposto no topo */
-        }
-        .clear-button:hover {
-            background: #0F2355;
-            color: white;
-        }
-    </style>
+        <style>
+            .clear-button {
+                position: absolute;
+                top: 65px;  /* Ajusta a posição mais para cima */
+                left: 10px; /* Mantém no canto esquerdo */
+                background: white;
+                color: black;
+                padding: 5px 10px; /* Ajusta tamanho */
+                font-size: 12px;
+                border: 1px solid #0F2355;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000; /* Mantém sobreposto no topo */
+            }
+            .clear-button:hover {
+                background: #0F2355;
+                color: white;
+            }
+        </style>
 
-    <button class="clear-button" onclick="clearDrawings()">🗑️ Limpar</button>
-    """
+        <button class="clear-button" onclick="clearDrawings()">🗑️ Limpar</button>
+        """,
+        unsafe_allow_html=True
+    )
 
-    # Adicionar o botão diretamente no HTML do mapa
-    m.get_root().html.add_child(folium.Element(clear_button))
-  
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
 
