@@ -353,8 +353,8 @@ with tabs[0]:
     <button class="clear-button" onclick="clearDrawings()">🗑️ Limpar</button>
     """
 
-# Adicionar o botão diretamente no HTML do mapa
-m.get_root().html.add_child(folium.Element(clear_button))
+    # Adicionar o botão diretamente no HTML do mapa
+    m.get_root().html.add_child(folium.Element(clear_button))
   
     # Aplicar filtros
     hexagonos_filtrados = hexagonos_h3.copy()
