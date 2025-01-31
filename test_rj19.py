@@ -321,7 +321,18 @@ with tabs[0]:
         zoom_start=st.session_state["map_zoom"],
         tiles="OpenStreetMap"
     )
-    draw = Draw(export=True)
+    draw = Draw(
+        export=True,
+        draw_options={
+            "polyline": True,
+            "polygon": True,
+            "rectangle": True,
+            "circle": True,
+            "marker": True,
+            "circlemarker": True
+        },
+        edit_options={"remove": False}  # 🔹 Aqui desativamos o botão de deletar)
+    )
     draw.add_to(m)
     MiniMap(toggle_display=True).add_to(m)
 
