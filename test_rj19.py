@@ -215,6 +215,11 @@ st.markdown(
         max-height: none !important; /* Remove limite máximo de altura */
         margin-bottom: 0 !important; /* Remove a margem inferior */
     }
+
+    /* Ocultar o botão de deletar do folium Draw */
+    .leaflet-draw-edit-remove {
+        display: none !important;
+    }
     
     </style>
     """,
