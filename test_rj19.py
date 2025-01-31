@@ -334,7 +334,7 @@ with tabs[0]:
         <style>
             .clear-button {
                 position: absolute;
-                top: 150px;  /* Ajusta a posição mais para cima */
+                top: 550px;  /* Ajusta a posição mais para cima */
                 left: 10px; /* Mantém no canto esquerdo */
                 background: white;
                 color: black;
