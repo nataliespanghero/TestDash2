@@ -333,13 +333,13 @@ with tabs[0]:
     <style>
         .clear-button {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 40px;  /* Ajuste a posição mais acima */
+            left: 10px; /* Mantém no canto esquerdo */
             background: white;
             color: black;
-            padding: 5px 10px;
-            font-size: 14px;
-            border: 2px solid #0F2355;
+            padding: 3px 8px; /* Reduz o tamanho do botão */
+            font-size: 12px; /* Texto menor */
+            border: 1px solid #0F2355;
             border-radius: 5px;
             cursor: pointer;
             z-index: 1000;
@@ -350,7 +350,7 @@ with tabs[0]:
         }
     </style>
 
-    <button class="clear-button" onclick="clearDrawings()">🗑️ Limpar Desenho</button>
+    <button class="clear-button" onclick="clearDrawings()">🗑️ Limpar</button>
     """
 
     # Adicionar o botão ao mapa
